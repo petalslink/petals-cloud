@@ -82,7 +82,7 @@ public class Context {
         return providerManager;
     }
 
-    public void setProviderManaer(ProviderManager providerManager) {
+    public void setProviderManager(ProviderManager providerManager) {
         this.providerManager = providerManager;
     }
 

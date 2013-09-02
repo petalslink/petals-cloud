@@ -67,7 +67,7 @@ public class DefaultManagementService implements org.ow2.petals.cloud.manager.ap
 
                     CreateVMAction create = new CreateVMAction();
                     Context context = new Context(descriptor.getId());
-                    context.setProviderManaer(provider);
+                    context.setProviderManager(provider);
                     context.setNode(node);
                     create.execute(context);
 
