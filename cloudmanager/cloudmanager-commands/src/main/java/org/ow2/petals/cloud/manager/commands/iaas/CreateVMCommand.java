@@ -73,6 +73,7 @@ public class CreateVMCommand extends OsgiCommandSupport {
             name = "cloud";
         }
 
+        // TODO : VM paramaters as input
         VM vm = new VM();
         vm.setImage("");
         vm.setOs("");
