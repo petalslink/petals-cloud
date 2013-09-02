@@ -1,0 +1,32 @@
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
+           xmlns:ext="http://aries.apache.org/blueprint/xmlns/blueprint-ext/v1.0.0"
+           xmlns:cfg="http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.1.0">
+
+
+    <bean id="mongo" class="com.mongodb.Mongo">
+        <argument value="localhost" type="java.lang.String"/>
+        <argument value="27017"/>
+    </bean>
+
+    <bean id="mongoFactory" class="org.springframework.data.mongodb.core.SimpleMongoDbFactory">
+        <argument ref="mongo"/>
+        <argument value="petals-cloudmanager"/>
+    </bean>
+    <service ref="mongoFactory" interface="org.springframework.data.mongodb.MongoDbFactory"/>
+
+    <bean id="mongoTemplate" class="org.springframework.data.mongodb.core.MongoTemplate">
+        <argument ref="mongoFactory"/>
+    </bean>
+
+    <!-- local beans -->
+    <bean id="providerRegistryService" class="org.ow2.petals.cloud.manager.mongo.ProviderRegistryService">
+        <argument ref="mongoTemplate"/>
+    </bean>
+    <bean id="storageService" class="org.ow2.petals.cloud.manager.mongo.StoreService">
+        <argument ref="mongoTemplate"/>
+    </bean>
+
+    <!-- Expose services -->
+    <service ref="providerRegistryService" interface="org.ow2.petals.cloud.manager.api.services.ProviderRegistryService"/>
+    <service ref="storageService" interface="org.ow2.petals.cloud.manager.api.services.StorageService"/>
+</blueprint>

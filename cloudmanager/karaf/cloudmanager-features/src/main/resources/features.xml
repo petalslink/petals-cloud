@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<features name="cloudmanager-features-${project.version}" xmlns="http://karaf.apache.org/xmlns/features/v1.0.0"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://karaf.apache.org/xmlns/features/v1.0.0 ">
+
+    <repository>
+        mvn:org.ow2.petals.cloud/cloudmanager-core/${project.version}/xml/features
+    </repository>
+    <repository>
+        mvn:org.ow2.petals.cloud/cloudmanager-openstack/${project.version}/xml/features
+    </repository>
+    <repository>
+        mvn:org.ow2.petals.cloud/cloudmanager-mongo/${project.version}/xml/features
+    </repository>
+
+    <feature name="cloudmanager-commands" version="${project.version}">
+        <bundle start="true">mvn:org.ow2.petals.cloud/cloudmanager-commands/${project.version}</bundle>
+    </feature>
+
+    <!-- Default features wich will be started -->
+    <feature name="cloudmanager-all" version="${project.version}">
+        <feature version="${project.version}">cloudmanager-core</feature>
+        <feature version="${project.version}">cloudmanager-mongo</feature>
+        <feature version="${project.version}">cloudmanager-commands</feature>
+        <feature version="${project.version}">cloudmanager-openstack</feature>
+    </feature>
+</features>

@@ -1,0 +1,12 @@
+<?xml version='1.0' encoding='UTF-8'?><wsdl:definitions name="TopicRegistryServiceService" targetNamespace="http://service.governance.play.ow2.org/" xmlns:ns1="http://schemas.xmlsoap.org/soap/http" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:tns="http://service.governance.play.ow2.org/" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <wsdl:portType name="TopicRegistryService">
+    </wsdl:portType>
+    <wsdl:binding name="TopicRegistryServiceServiceSoapBinding" type="tns:TopicRegistryService">
+        <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+    </wsdl:binding>
+    <wsdl:service name="TopicRegistryServiceService">
+        <wsdl:port binding="tns:TopicRegistryServiceServiceSoapBinding" name="TopicRegistryServicePort">
+            <soap:address location="http://localhost:8080/play/governance/TopicRegistryService"/>
+        </wsdl:port>
+    </wsdl:service>
+</wsdl:definitions>

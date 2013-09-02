@@ -1,0 +1,27 @@
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
+           xmlns:cfg="http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.1.0">
+
+    <!-- External references (imports) -->
+    <reference id="storageService" interface="org.ow2.petals.cloud.manager.api.services.StorageService"/>
+    <reference id="nodeManagerListener" interface="org.ow2.petals.cloud.manager.api.listeners.NodeManagerListener" availability="optional"/>
+    <reference-list id="providerManagers" interface="org.ow2.petals.cloud.manager.api.ProviderManager" activation="eager" availability="optional"/>
+
+    <bean id="managementService" class="org.ow2.petals.cloud.manager.core.services.DefaultManagementService">
+        <argument ref="providerManagers"/>
+        <argument ref="nodeManagerListener"/>
+    </bean>
+
+    <service ref="managementService" interface="org.ow2.petals.cloud.manager.api.services.ManagementService"/>
+
+
+    <bean id="cloudManager" class="org.ow2.petals.cloud.manager.core.CloudManager">
+        <argument ref="managementService"/>
+        <argument ref="storageService"/>
+    </bean>
+
+    <!-- Exports -->
+    <service ref="cloudManager" interface="org.ow2.petals.cloud.manager.api.CloudManager"/>
+
+
+</blueprint>
+

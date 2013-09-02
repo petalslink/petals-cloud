@@ -1,0 +1,3 @@
+# Cloud Manager API
+
+Let's talk to Cloud platforms...

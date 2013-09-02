@@ -1,0 +1,42 @@
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
+           xmlns:ext="http://aries.apache.org/blueprint/xmlns/blueprint-ext/v1.0.0"
+           xmlns:shell="http://karaf.apache.org/xmlns/shell/v1.0.0"
+           xmlns:cfg="http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.1.0">
+
+    <!-- External references -->
+    <reference id="cloud" interface="org.ow2.petals.cloud.manager.api.CloudManager"/>
+    <reference id="providerRegistryService" interface="org.ow2.petals.cloud.manager.api.services.ProviderRegistryService"/>
+
+    <!-- local beans -->
+    <bean id="openstackConnector" class="org.ow2.petals.cloud.manager.openstack.hack.Connector"/>
+    <service ref="openstackConnector" interface="com.woorea.openstack.base.client.OpenStackClientConnector"/>
+
+    <bean id="openstackProviderManager" class="org.ow2.petals.cloud.manager.openstack.OpenStackProviderManager">
+        <argument ref="openstackConnector"/>
+    </bean>
+
+    <!-- Expose service -->
+    <service ref="openstackProviderManager" interface="org.ow2.petals.cloud.manager.api.ProviderManager"/>
+
+    <!-- Shell commands -->
+    <shell:command-bundle>
+        <shell:command name="openstack/servers">
+            <shell:action class="org.ow2.petals.cloud.manager.openstack.commands.ListServersCommand">
+                <shell:argument ref="openstackConnector"/>
+                <shell:argument ref="providerRegistryService"/>
+            </shell:action>
+        </shell:command>
+        <shell:command name="openstack/images">
+            <shell:action class="org.ow2.petals.cloud.manager.openstack.commands.ListImagesCommand">
+                <shell:argument ref="openstackConnector"/>
+                <shell:argument ref="providerRegistryService"/>
+            </shell:action>
+        </shell:command>
+        <shell:command name="openstack/flavors">
+            <shell:action class="org.ow2.petals.cloud.manager.openstack.commands.ListFlavorsCommand">
+                <shell:argument ref="openstackConnector"/>
+                <shell:argument ref="providerRegistryService"/>
+            </shell:action>
+        </shell:command>
+    </shell:command-bundle>
+</blueprint>

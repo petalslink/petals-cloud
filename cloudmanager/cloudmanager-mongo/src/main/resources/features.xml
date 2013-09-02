@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<features name="cloudmanager-mongo-features-${project.version}"
+          xmlns="http://karaf.apache.org/xmlns/features/v1.0.0">
+
+    <feature name="cloudmanager-mongo" version="${project.version}">
+        <bundle dependency="true">mvn:org.ow2.petals.cloud/cloudmanager-api/${project.version}</bundle>
+        <bundle dependency="true">mvn:org.springframework/spring-expression/3.1.2.RELEASE</bundle>
+        <bundle dependency="true">mvn:org.springframework/spring-beans/3.1.2.RELEASE</bundle>
+        <bundle dependency="true">mvn:org.springframework/spring-core/3.1.2.RELEASE</bundle>
+        <bundle dependency="true">mvn:org.springframework/spring-tx/3.1.2.RELEASE</bundle>
+        <bundle dependency="true">mvn:org.springframework/spring-context/3.1.2.RELEASE</bundle>
+        <bundle dependency="true">mvn:org.springframework/spring-asm/3.1.2.RELEASE</bundle>
+        <bundle dependency="true">mvn:org.mongodb/mongo-java-driver/2.9.1</bundle>
+        <bundle dependency="true">mvn:org.springframework.data/spring-data-commons-core/1.4.0.RELEASE</bundle>
+        <bundle dependency="true">mvn:org.springframework.data/spring-data-mongodb/1.1.1.RELEASE</bundle>
+        <bundle dependency="true">mvn:com.google.guava/guava/${guava.version}</bundle>
+        <bundle start="true">mvn:org.ow2.petals.cloud/cloudmanager-mongo/${project.version}</bundle>
+    </feature>
+
+</features>

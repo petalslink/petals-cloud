@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="windows-1252"?>
+
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
+           xmlns:shell="http://karaf.apache.org/xmlns/shell/v1.0.0"
+           xmlns:cm="http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.1.0"
+           xmlns:ext="http://aries.apache.org/blueprint/xmlns/blueprint-ext/v1.0.0">
+
+    <!-- Allow usage of System properties, especially the karaf.base property -->
+    <ext:property-placeholder placeholder-prefix="$[" placeholder-suffix="]"/>
+
+    <reference-list id="supportedRuntimes" interface="org.ow2.petals.cloud.manager.api.deployment.tools.DeploymentProvider"
+                    availability="optional" activation="eager"/>
+
+    <reference-list id="providerManagers" interface="org.ow2.petals.cloud.manager.api.ProviderManager"
+                    availability="optional" activation="eager"/>
+
+    <reference id="cloudManager" interface="org.ow2.petals.cloud.manager.api.CloudManager"/>
+    <reference id="providerRegistryService" interface="org.ow2.petals.cloud.manager.api.services.ProviderRegistryService"/>
+
+    <shell:command-bundle>
+        <!-- PaaS Commands -->
+        <shell:command name="paas/create">
+            <shell:action class="org.ow2.petals.cloud.manager.commands.paas.CreatePaaSCommand">
+                <shell:argument ref="cloudManager"/>
+                <shell:argument ref="supportedRuntimes"/>
+            </shell:action>
+        </shell:command>
+        <shell:command name="paas/list">
+            <shell:action class="org.ow2.petals.cloud.manager.commands.paas.ListPaaSCommand">
+                <shell:argument ref="cloudManager"/>
+            </shell:action>
+        </shell:command>
+        <shell:command name="paas/delete">
+            <shell:action class="org.ow2.petals.cloud.manager.commands.paas.DeletePaaSCommand">
+                <shell:argument ref="cloudManager"/>
+            </shell:action>
+        </shell:command>
+        <shell:command name="paas/providers">
+            <shell:action class="org.ow2.petals.cloud.manager.commands.paas.ListSupportedRuntimesCommand">
+                <shell:argument ref="supportedRuntimes"/>
+            </shell:action>
+        </shell:command>
+        <!-- IaaS Commands -->
+        <shell:command name="iaas/account">
+            <shell:action class="org.ow2.petals.cloud.manager.commands.iaas.RegisterAccountCommand">
+                <shell:argument ref="providerManagers"/>
+                <shell:argument ref="providerRegistryService"/>
+            </shell:action>
+        </shell:command>
+        <shell:command name="iaas/accounts">
+            <shell:action class="org.ow2.petals.cloud.manager.commands.iaas.ListAccountsCommand">
+                <shell:argument ref="providerRegistryService"/>
+            </shell:action>
+        </shell:command>
+        <shell:command name="iaas/providers">
+            <shell:action class="org.ow2.petals.cloud.manager.commands.iaas.ListProvidersCommand">
+                <shell:argument ref="providerManagers"/>
+            </shell:action>
+        </shell:command>
+        <!-- VM commands -->
+        <shell:command name="vm/create">
+            <shell:action class="org.ow2.petals.cloud.manager.commands.iaas.CreateVMCommand">
+                <shell:argument ref="providerManagers"/>
+                <shell:argument ref="providerRegistryService"/>
+            </shell:action>
+        </shell:command>
+
+    </shell:command-bundle>
+</blueprint>

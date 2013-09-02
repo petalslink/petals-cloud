@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<features name="cloudmanager-core-features-${project.version}"
+          xmlns="http://karaf.apache.org/xmlns/features/v1.0.0">
+
+    <feature name="cloudmanager-core" version="${project.version}">
+        <bundle dependency="true">mvn:ch.qos.logback/logback-core/1.0.13</bundle>
+        <bundle dependency="true">mvn:ch.qos.logback/logback-classic/1.0.13</bundle>
+        <bundle dependency="true">mvn:org.slf4j/slf4j-api/1.7.5</bundle>
+        <bundle dependency="true">mvn:com.ning/async-http-client/1.7.19</bundle>
+        <!--<bundle dependency="true">mvn:javax.ws.rs/jsr311-manager/1.1.1</bundle>-->
+
+        <bundle dependency="true">mvn:javax.ws.rs/javax.ws.rs-api/2.0</bundle>
+
+        <!--<bundle dependency="true">mvn:org.apache.servicemix.specs/org.apache.servicemix.specs.jsr311-manager-1.1.1/2.2.0</bundle>-->
+        <bundle dependency="true">mvn:com.google.code.gson/gson/2.2.2</bundle>
+        <bundle dependency="true">mvn:com.google.guava/guava/${guava.version}</bundle>
+        <bundle dependency="true">mvn:org.bouncycastle/bcprov-jdk16/1.46</bundle>
+        <bundle dependency="true">mvn:net.schmizz/sshj/0.8.1</bundle>
+        <bundle dependency="true">
+            mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.jzlib/1.0.7_1
+        </bundle>
+
+        <bundle start="true">mvn:org.ow2.petals.cloud/cloudmanager-api/${project.version}</bundle>
+        <bundle start="true">mvn:org.ow2.petals.cloud/cloudmanager-core/${project.version}</bundle>
+    </feature>
+</features>

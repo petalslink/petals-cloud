@@ -1,0 +1,88 @@
+{
+    "name": "sample",
+    "description": "This is a distributed deployment sample",
+    "providers": [
+        {
+            "name": "openstack.ow2.org",
+            "type": "openstack",
+            "endpoint": "http://ow2stack.org:5000",
+            "credentials": {
+                "username": "foo",
+                "password": "bar"
+            }
+        },
+        {
+            "name": "openstack.linagora.com",
+            "type": "openstack",
+            "endpoint": "http://openstack.linagora.com:5000",
+            "credentials": {
+                "username": "foo",
+                "password": "bar"
+            }
+        }
+
+    ],
+    "vm": {
+        "os" : "ubuntu",
+        "image" : "m1.small"
+    },
+    "softwares": [
+        {
+            "name" : "petals",
+            "type" : "file",
+            "version": "5.0-RC1",
+            "source": "http://petals.ow2.org/downloads/petals-esb-5.0-RC1.zip"
+        },
+        {
+            "name" : "openjdk-8",
+            "type" : "deb",
+            "version": "8"
+        }
+    ],
+    "nodes": [
+        {
+            "name": "A",
+            "id" : "91983883-333-02092-0092",
+            "softwares" : ["petals", "openjdk-8"],
+            "vm": {
+                "os" : "ubuntu",
+                "disk" : "xxl",
+                "image" : "m1.tiny"
+            },
+            "ports": [8080, 7700],
+            "provider": "openstack.ow2.org",
+            "properties": [
+                {
+                    "name": "mode", "value": "master"
+                },
+                {
+                    "name": "foo", "value": "bar"
+                }
+            ],
+            "privateIpAddress": ["192.168.0.1", "192.168.0.2"],
+            "publicIpAddress": ["001.petals.linagora.com"],
+            "access" : {
+                "type" : "ssh",
+                "port" : 22,
+                "credentials" : {
+                    "username" : "foo",
+                    "password" : "bar"
+                }
+            }
+        },
+        {
+            "name": "B",
+            "softwares" : ["petals", "openjdk-8"],
+            "ports": [8080, 7700, 7800],
+            "provider": "openstack.linagora.com",
+            "properties": [
+                {
+                    "name": "mode", "value": "slave"
+                },
+                {
+                    "name": "foo", "value": "bar"
+                }
+            ]
+        }
+    ]
+}
