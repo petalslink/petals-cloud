@@ -22,47 +22,15 @@ package org.ow2.petals.cloud.manager.api.deployment;
 /**
  * @author Christophe Hamerling - chamerling@linagora.com
  */
-public class Property {
+public interface Constants {
 
-    /**
-     * Property name
-     */
-    private String name;
+    public static final String FILE_TYPE = "file";
 
-    /**
-     * A property may have a type (file is a good example...)
-     */
-    private String type;
+    public static final String PUPPET_SCRIPT = "puppet-script";
 
-    /**
-     * Property value
-     */
-    private String value;
+    public static final String PUPPET_DESTINATION = "puppet-destination";
 
-    public Property() {
-    }
+    public static final String PUPPET_SCRIPT_CLASSPATH = "classpath";
 
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getValue() {
-        return value;
-    }
-
-    public void setValue(String value) {
-        this.value = value;
-    }
-
-    public String getType() {
-        return type;
-    }
-
-    public void setType(String type) {
-        this.type = type;
-    }
+    public static final String PACKAGE_TYPE = "package";
 }

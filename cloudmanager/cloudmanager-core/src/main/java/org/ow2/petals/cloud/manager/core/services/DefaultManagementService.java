@@ -28,7 +28,7 @@ import org.ow2.petals.cloud.manager.api.actions.Context;
 import org.ow2.petals.cloud.manager.api.deployment.Deployment;
 import org.ow2.petals.cloud.manager.api.listeners.NodeManagerListener;
 import org.ow2.petals.cloud.manager.core.actions.CreateVMAction;
-import org.ow2.petals.cloud.manager.core.actions.InstallSoftwareAction;
+import org.ow2.petals.cloud.manager.core.actions.RunRemoteScriptAction;
 import org.ow2.petals.cloud.manager.core.actions.RunScriptsAction;
 
 import java.util.List;
@@ -71,8 +71,8 @@ public class DefaultManagementService implements org.ow2.petals.cloud.manager.ap
                     context.setNode(node);
                     create.execute(context);
 
-                    InstallSoftwareAction install = new InstallSoftwareAction();
-                    install.execute(context);
+                    //RunRemoteScriptAction install = new RunRemoteScriptAction();
+                    //install.execute(context);
 
                     RunScriptsAction run = new RunScriptsAction();
                     run.execute(context);

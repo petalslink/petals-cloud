@@ -22,6 +22,8 @@ package org.ow2.petals.cloud.manager.api.actions;
 import org.ow2.petals.cloud.manager.api.ProviderManager;
 import org.ow2.petals.cloud.manager.api.deployment.Deployment;
 import org.ow2.petals.cloud.manager.api.deployment.Node;
+import org.ow2.petals.cloud.manager.api.deployment.Provider;
+import org.ow2.petals.cloud.manager.api.listeners.DeploymentListener;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -35,6 +37,11 @@ public class Context {
 
     private ProviderManager providerManager;
 
+    /**
+     * Provider account. Note that this should be the same as the one defined in node.getProvider.
+     */
+    private Provider provider;
+
     private Map<String, Object> params;
 
     private Map<String, Object> output;
@@ -42,6 +49,8 @@ public class Context {
     private String id;
 
     private Deployment descriptor;
+
+    private DeploymentListener listener;
 
     /**
      * Current node we want to work on...
@@ -100,5 +109,21 @@ public class Context {
 
     public void setDescriptor(Deployment descriptor) {
         this.descriptor = descriptor;
+    }
+
+    public Provider getProvider() {
+        return provider;
+    }
+
+    public void setProvider(Provider provider) {
+        this.provider = provider;
+    }
+
+    public DeploymentListener getListener() {
+        return listener;
+    }
+
+    public void setListener(DeploymentListener listener) {
+        this.listener = listener;
     }
 }

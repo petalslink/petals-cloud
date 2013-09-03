@@ -17,52 +17,31 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA 
  *
  */
-package org.ow2.petals.cloud.manager.api.deployment;
+package org.ow2.petals.cloud.manager.core.actions;
+
+import org.ow2.petals.cloud.manager.api.CloudManagerException;
+import org.ow2.petals.cloud.manager.api.actions.Context;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Christophe Hamerling - chamerling@linagora.com
  */
-public class Property {
+public class StopVMAction extends MonitoredAction {
 
-    /**
-     * Property name
-     */
-    private String name;
+    private static Logger logger = LoggerFactory.getLogger(StopVMAction.class);
 
-    /**
-     * A property may have a type (file is a good example...)
-     */
-    private String type;
-
-    /**
-     * Property value
-     */
-    private String value;
-
-    public Property() {
+    public StopVMAction() {
+        super();
     }
 
-    public String getName() {
-        return name;
+    @Override
+    protected String getName() {
+        return StopVMAction.class.getName();
     }
 
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getValue() {
-        return value;
-    }
-
-    public void setValue(String value) {
-        this.value = value;
-    }
-
-    public String getType() {
-        return type;
-    }
-
-    public void setType(String type) {
-        this.type = type;
+    @Override
+    protected void doExecute(Context context) throws CloudManagerException {
+        throw new CloudManagerException("Not implemented");
     }
 }

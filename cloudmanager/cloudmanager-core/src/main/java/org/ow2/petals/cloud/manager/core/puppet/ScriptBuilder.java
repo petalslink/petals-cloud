@@ -17,52 +17,24 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA 
  *
  */
-package org.ow2.petals.cloud.manager.api.deployment;
+package org.ow2.petals.cloud.manager.core.puppet;
+
+import org.ow2.petals.cloud.manager.api.CloudManagerException;
+import org.ow2.petals.cloud.manager.api.actions.Context;
+import org.ow2.petals.cloud.manager.api.deployment.Node;
 
 /**
  * @author Christophe Hamerling - chamerling@linagora.com
  */
-public class Property {
+public interface ScriptBuilder {
 
     /**
-     * Property name
+     * Build a puppet script form input parameters.
+     *
+     * @param node
+     * @param context
+     * @return
      */
-    private String name;
+    String build(Node node, Context context) throws CloudManagerException;
 
-    /**
-     * A property may have a type (file is a good example...)
-     */
-    private String type;
-
-    /**
-     * Property value
-     */
-    private String value;
-
-    public Property() {
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getValue() {
-        return value;
-    }
-
-    public void setValue(String value) {
-        this.value = value;
-    }
-
-    public String getType() {
-        return type;
-    }
-
-    public void setType(String type) {
-        this.type = type;
-    }
 }

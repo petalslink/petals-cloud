@@ -41,6 +41,11 @@ public class Deployment {
     private List<Node> nodes;
 
     /**
+     * Define properties at the deployment level. These can be globals for providers/software/nodes/...
+     */
+    private List<Property> properties;
+
+    /**
      * Default VM to use if none is defined in Node
      */
     private VM vm;
@@ -49,6 +54,7 @@ public class Deployment {
         providers = Lists.newArrayList();
         softwares = Lists.newArrayList();
         nodes = Lists.newArrayList();
+        properties = Lists.newArrayList();
     }
 
     public String getId() {
@@ -105,5 +111,13 @@ public class Deployment {
 
     public void setVm(VM vm) {
         this.vm = vm;
+    }
+
+    public List<Property> getProperties() {
+        return properties;
+    }
+
+    public void setProperties(List<Property> properties) {
+        this.properties = properties;
     }
 }

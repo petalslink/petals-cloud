@@ -21,11 +21,17 @@ package org.ow2.petals.cloud.manager.core.actions;
 
 import org.ow2.petals.cloud.manager.api.CloudManagerException;
 import org.ow2.petals.cloud.manager.api.actions.Context;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
+ * Start a VM from its ID
+ *
  * @author Christophe Hamerling - chamerling@linagora.com
  */
 public class StartVMAction extends MonitoredAction {
+
+    private static Logger logger = LoggerFactory.getLogger(StartVMAction.class);
 
     public StartVMAction() {
         super();
@@ -38,5 +44,6 @@ public class StartVMAction extends MonitoredAction {
 
     @Override
     protected void doExecute(Context context) throws CloudManagerException {
+        throw new CloudManagerException("Not implemented");
     }
 }

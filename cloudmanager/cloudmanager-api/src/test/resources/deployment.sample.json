@@ -57,6 +57,16 @@
                 },
                 {
                     "name": "foo", "value": "bar"
+                },
+                {
+                    "name": "server.properties",
+                    "type": "file",
+                    "value": "/tmp/server.properties"
+                },
+                {
+                    "name": "petals",
+                    "type": "url",
+                    "value": "http://petals.ow2.org/downloads/dsb.zip"
                 }
             ],
             "privateIpAddress": ["192.168.0.1", "192.168.0.2"],

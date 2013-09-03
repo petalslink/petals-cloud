@@ -44,7 +44,7 @@ public class Node {
     private List<String> softwares;
 
     /**
-     * Provider to install node on or where the node is running
+     * Provider to install node on or where the node is running (account)
      */
     private String provider;
 

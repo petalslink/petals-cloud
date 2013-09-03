@@ -20,15 +20,16 @@
 package org.ow2.petals.cloud.manager.core.actions;
 
 import org.ow2.petals.cloud.manager.api.CloudManagerException;
-import org.ow2.petals.cloud.manager.api.actions.Action;
 import org.ow2.petals.cloud.manager.api.actions.Context;
 import org.ow2.petals.cloud.manager.api.listeners.Monitor;
 import org.ow2.petals.cloud.manager.core.listeners.SysoutMonitor;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 /**
  * @author Christophe Hamerling - chamerling@linagora.com
  */
-public abstract class MonitoredAction implements Action {
+public abstract class MonitoredAction extends BaseAction {
 
     private final Monitor monitor;
 
@@ -44,6 +45,8 @@ public abstract class MonitoredAction implements Action {
     }
 
     public void execute(Context context) throws CloudManagerException {
+        checkNotNull(context);
+
         if (monitor == null) {
             doExecute(context);
             return;

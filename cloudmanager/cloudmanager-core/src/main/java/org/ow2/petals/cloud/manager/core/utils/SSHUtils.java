@@ -20,19 +20,26 @@
 package org.ow2.petals.cloud.manager.core.utils;
 
 import com.google.common.base.Charsets;
+import com.google.common.base.Predicate;
+import com.google.common.base.Throwables;
+import com.google.common.collect.Iterables;
 import net.schmizz.sshj.SSHClient;
 import net.schmizz.sshj.common.SecurityUtils;
+import net.schmizz.sshj.connection.channel.direct.Session;
 import net.schmizz.sshj.transport.verification.HostKeyVerifier;
 import net.schmizz.sshj.xfer.InMemorySourceFile;
+import org.apache.commons.io.IOUtils;
+import org.ow2.petals.cloud.manager.api.CloudManagerException;
 import org.ow2.petals.cloud.manager.api.deployment.Access;
 import org.ow2.petals.cloud.manager.api.deployment.Node;
+import org.ow2.petals.cloud.manager.api.listeners.DeploymentListener;
+import org.ow2.petals.cloud.manager.api.utils.NotNullDeploymentListener;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.security.PublicKey;
 
 import static com.google.common.base.Preconditions.checkArgument;
+import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * @author Christophe Hamerling - chamerling@linagora.com
@@ -112,6 +119,123 @@ public class SSHUtils {
             }
         }, destination);
     }
+
+    /**
+     * Execute a script on the remote node.
+     *
+     * @param client the SSH client instance used to run the script
+     * @param script the script content
+     */
+    public static void executeScript(SSHClient client, String script, DeploymentListener listener) throws CloudManagerException {
+        checkNotNull(client);
+        final DeploymentListener l = NotNullDeploymentListener.get(listener);
+
+        Session session = null;
+        try {
+            session = client.startSession();
+        } catch (Exception e) {
+            throw new CloudManagerException("Can not start SSH session while trying to execute script", e);
+        }
+
+        try {
+            session.allocateDefaultPTY();
+            Session.Command command = session.exec(script);
+            SSHUtils.listen(command, l);
+            command.join();
+            final Integer exitStatus = command.getExitStatus();
+            session.close();
+        } catch (Exception e) {
+
+        } finally {
+            try {
+                session.close();
+            } catch (Exception e) {
+                e.printStackTrace();
+                // NOP
+            }
+        }
+    }
+
+    /**
+     * Listen to a SSH command results
+     *
+     * @param command
+     * @param listener
+     */
+    public static void listen(final Session.Command command, final DeploymentListener listener) {
+        checkNotNull(command);
+
+        // launch new threads to listen to command streams...
+        Thread in = new Thread() {
+            @Override
+            public void run() {
+                BufferedReader reader = new BufferedReader(new InputStreamReader(command.getInputStream()));
+                try {
+                    String line;
+                    while ((line = reader.readLine()) != null) {
+                        if (!line.isEmpty()) {
+                            listener.on("ssh-out", "out", "%s : %s", "REMOTE-TODO", line);
+                        }
+                    }
+                } catch (IOException e) {
+                    throw Throwables.propagate(e);
+                }
+            }
+        };
+        in.start();
+
+        Thread error = new Thread() {
+            @Override
+            public void run() {
+                BufferedReader reader = new BufferedReader(new InputStreamReader(command.getErrorStream()));
+                try {
+                    String line;
+                    while ((line = reader.readLine()) != null) {
+                        if (!line.isEmpty()) {
+                            listener.on("ssh-error", "error", " %s : %s", "REMOTE-TODO", line);
+                        }
+                    }
+                } catch (IOException e) {
+                    throw Throwables.propagate(e);
+                }
+            }
+        };
+        error.start();
+    }
+
+    /**
+     * Get client from Node
+     *
+     * @param node
+     * @return
+     */
+    public static SSHClient getClient(Node node) throws CloudManagerException {
+        String hostname = Iterables.tryFind(node.getPublicIpAddress(), new Predicate<String>() {
+            public boolean apply(String input) {
+                return input != null;
+            }
+        }).or(Iterables.tryFind(node.getPrivateIpAddress(), new Predicate<String>() {
+            public boolean apply(String input) {
+                return input != null;
+            }
+        })).orNull();
+        checkNotNull(hostname, "Can not access to a node using a null IP...");
+
+        // assume that we are using SSH by default
+        int port = node.getAccess().getPort();
+        if (port <= 0) {
+            port = Access.DEFAULT_SSH;
+        }
+
+        SSHClient client = null;
+        try {
+            client = SSHUtils.newClient(hostname, port, node.getAccess());
+        } catch (IOException e) {
+            throw new CloudManagerException("Can not create SSH client for node on hostname " + hostname, e);
+        }
+        return client;
+    }
+
 
     /**
      * Try to connect to the remote node using defined SSH port

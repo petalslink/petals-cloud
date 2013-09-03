@@ -24,6 +24,8 @@ import org.ow2.petals.cloud.manager.api.ProviderManager;
 import org.ow2.petals.cloud.manager.api.actions.Context;
 import org.ow2.petals.cloud.manager.api.deployment.Node;
 import org.ow2.petals.cloud.manager.api.deployment.Provider;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -32,17 +34,23 @@ import static com.google.common.base.Preconditions.checkNotNull;
  */
 public class CreateVMAction extends MonitoredAction {
 
+    private static Logger logger = LoggerFactory.getLogger(CreateVMAction.class);
+
     public CreateVMAction() {
         super();
     }
 
     public void doExecute(Context context) throws CloudManagerException {
-        ProviderManager provider = checkNotNull(context.getProviderManager());
-        Node node = checkNotNull(context.getNode());
-        Provider p = null;
-        Node result = provider.createNode(p, node);
-        System.out.println("Node is started and have to following information");
-        System.out.println(result);
+        ProviderManager provider = getProviderManager(context);
+        Node node = getNode(context);
+        Provider account = getProvider(context);
+        logger.info("Creating new node on {}", provider.getProviderName());
+
+        Node result = provider.createNode(account, node);
+        logger.info("Node {} is started on provider {}", result.getId(), provider.getProviderName());
+        if (logger.isDebugEnabled()) {
+            logger.debug(result.toString());
+        }
     }
 
     @Override

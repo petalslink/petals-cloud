@@ -19,38 +19,40 @@
  */
 package org.ow2.petals.cloud.manager.core.actions;
 
-import org.ow2.petals.cloud.manager.api.CloudManagerException;
 import org.ow2.petals.cloud.manager.api.ProviderManager;
+import org.ow2.petals.cloud.manager.api.actions.Action;
 import org.ow2.petals.cloud.manager.api.actions.Context;
+import org.ow2.petals.cloud.manager.api.deployment.Deployment;
 import org.ow2.petals.cloud.manager.api.deployment.Node;
 import org.ow2.petals.cloud.manager.api.deployment.Provider;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * @author Christophe Hamerling - chamerling@linagora.com
  */
-public class DestroyVMAction extends MonitoredAction {
+public abstract class BaseAction implements Action {
 
-    private static Logger logger = LoggerFactory.getLogger(DestroyVMAction.class);
-
-    public DestroyVMAction() {
-        super();
+    /**
+     *
+     */
+    protected BaseAction() {
     }
 
-    @Override
-    protected String getName() {
-        return DestroyVMAction.class.getName();
+    protected Node getNode(Context context) {
+        return checkNotNull(context.getNode());
     }
 
-    @Override
-    protected void doExecute(Context context) throws CloudManagerException {
-        ProviderManager provider = getProviderManager(context);
-        Node node = getNode(context);
-        Provider account = getProvider(context);
-
-        logger.info("Destroying node {} on provider {}", node.getId(), provider.getProviderName());
-        provider.deleteNode(account, node);
-        logger.info("Node {} destroyed on provider {}", node.getId(), provider.getProviderName());
+    protected ProviderManager getProviderManager(Context context) {
+        return checkNotNull(context.getProviderManager());
     }
+
+    protected Provider getProvider(Context context) {
+        return checkNotNull(context.getProvider());
+    }
+
+    protected Deployment getDescriptor(Context context) {
+        return checkNotNull(context.getDescriptor());
+    }
+
 }

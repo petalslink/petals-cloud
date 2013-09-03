@@ -21,6 +21,8 @@ package org.ow2.petals.cloud.manager.core.actions;
 
 import org.ow2.petals.cloud.manager.api.CloudManagerException;
 import org.ow2.petals.cloud.manager.api.actions.Context;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Run scripts on the remote node using SSH
@@ -29,11 +31,14 @@ import org.ow2.petals.cloud.manager.api.actions.Context;
  */
 public class RunScriptsAction extends MonitoredAction {
 
+    private static Logger logger = LoggerFactory.getLogger(RunScriptsAction.class);
+
     public RunScriptsAction() {
         super();
     }
 
     public void doExecute(Context context) throws CloudManagerException {
+        throw new CloudManagerException("Not implemented");
     }
 
     @Override
