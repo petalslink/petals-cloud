@@ -73,6 +73,8 @@ public class CreatePaaSCommand extends BaseCommand {
         descriptor.getProperties().add(PropertyHelper.get("size", null, "" + size));
         descriptor.getProperties().add(PropertyHelper.get("iaas", null, iaas));
 
+        // enrich descriptor using the paas deployment provider
+        // TODO : Move to the management service?
         deploymentProvider.populate(descriptor, args);
 
         // TODO : Async
