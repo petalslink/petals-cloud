@@ -19,6 +19,7 @@
  */
 package org.ow2.petals.cloud.manager.api.utils;
 
+import org.ow2.petals.cloud.manager.api.deployment.Node;
 import org.ow2.petals.cloud.manager.api.listeners.DeploymentListener;
 
 /**
@@ -30,8 +31,10 @@ public class SysoutDeploymentListener implements DeploymentListener {
         return new SysoutDeploymentListener();
     }
 
-    public void on(String id, String step, String pattern, String... args) {
-        StringBuffer sb = new StringBuffer("DeploymentListener : ID=").append(id).append(", step=").append(step);
+    public void on(String id, Node node, String action, String step, String pattern, Object... args) {
+        StringBuffer sb = new StringBuffer("DeploymentListener : ID=")
+                .append(id).append(", nodeId=").append(node.getId()).append(", action=").append(action).append(", step=").append(step);
+
         if (pattern != null) {
             sb.append(String.format(pattern, args));
         }

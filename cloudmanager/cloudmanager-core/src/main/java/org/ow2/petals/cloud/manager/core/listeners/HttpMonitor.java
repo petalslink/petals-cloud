@@ -31,19 +31,19 @@ public class HttpMonitor extends AbstractHttpNotifier implements Monitor {
     private String endpoint;
 
     public void start(String step) {
-        post(endpoint, new Event(MONITOR, step, "START"));
+        post(endpoint, new Event("TODO", MONITOR, step, "START"));
     }
 
     public void end(String step) {
-        post(endpoint, new Event(MONITOR, step, "END"));
+        post(endpoint, new Event("TODO", MONITOR, step, "END"));
     }
 
     public void time(String step, long time) {
-        post(endpoint, new Event(MONITOR, step, "TIME:" + time));
+        post(endpoint, new Event("TODO", MONITOR, step, "TIME:" + time));
     }
 
     public void error(String step, Exception e) {
-        post(endpoint, new Event(MONITOR, step, "ERROR:" + e.getMessage()));
+        post(endpoint, new Event("TODO", MONITOR, step, "ERROR:" + e.getMessage()));
     }
 
     public void setEndpoint(String endpoint) {

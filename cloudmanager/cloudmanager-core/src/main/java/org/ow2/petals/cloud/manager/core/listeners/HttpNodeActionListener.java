@@ -17,31 +17,26 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA 
  *
  */
-package org.ow2.petals.cloud.manager.api.utils;
+package org.ow2.petals.cloud.manager.core.listeners;
 
 import org.ow2.petals.cloud.manager.api.deployment.Node;
 import org.ow2.petals.cloud.manager.api.listeners.DeploymentListener;
 
 /**
- * Ensure a not null deployment listener...
- *
  * @author Christophe Hamerling - chamerling@linagora.com
  */
-public class NotNullDeploymentListener implements DeploymentListener {
+public class HttpNodeActionListener extends AbstractHttpNotifier implements DeploymentListener {
 
-    public static DeploymentListener get(DeploymentListener listener) {
-        return new NotNullDeploymentListener(listener);
-    }
+    String endpoint;
 
-    public DeploymentListener listener;
-
-    public NotNullDeploymentListener(DeploymentListener listener) {
-        this.listener = listener;
+    public HttpNodeActionListener() {
     }
 
     public void on(String id, Node node, String action, String step, String pattern, Object... args) {
-        if (this.listener != null) {
-            this.listener.on(id, node, action, step, pattern, args);
-        }
+        this.post(endpoint, new Event(node.getId(), action, step, ""));
+    }
+
+    public void setEndpoint(String endpoint) {
+        this.endpoint = endpoint;
     }
 }

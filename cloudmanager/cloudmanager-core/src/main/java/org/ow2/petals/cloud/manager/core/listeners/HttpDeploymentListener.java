@@ -19,6 +19,7 @@
  */
 package org.ow2.petals.cloud.manager.core.listeners;
 
+import org.ow2.petals.cloud.manager.api.deployment.Node;
 import org.ow2.petals.cloud.manager.api.listeners.DeploymentListener;
 
 /**
@@ -33,12 +34,12 @@ public class HttpDeploymentListener extends AbstractHttpNotifier implements Depl
      */
     private String endpoint;
 
-    public void on(String id, String step, String pattern, String... args) {
+    public void on(String id, Node node, String action, String step, String pattern, Object... args) {
         String message = "";
         if (pattern != null) {
             message = String.format(pattern, args);
         }
-        this.post(endpoint, new Event(id, step, message));
+        this.post(endpoint, new Event(id, action, step, message));
     }
 
     public void setEndpoint(String endpoint) {

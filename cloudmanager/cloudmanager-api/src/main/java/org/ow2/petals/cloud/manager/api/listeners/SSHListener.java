@@ -17,31 +17,14 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA 
  *
  */
-package org.ow2.petals.cloud.manager.api.utils;
-
-import org.ow2.petals.cloud.manager.api.deployment.Node;
-import org.ow2.petals.cloud.manager.api.listeners.DeploymentListener;
+package org.ow2.petals.cloud.manager.api.listeners;
 
 /**
- * Ensure a not null deployment listener...
- *
  * @author Christophe Hamerling - chamerling@linagora.com
  */
-public class NotNullDeploymentListener implements DeploymentListener {
+public interface SSHListener {
 
-    public static DeploymentListener get(DeploymentListener listener) {
-        return new NotNullDeploymentListener(listener);
-    }
+    void onMessage(String line);
 
-    public DeploymentListener listener;
-
-    public NotNullDeploymentListener(DeploymentListener listener) {
-        this.listener = listener;
-    }
-
-    public void on(String id, Node node, String action, String step, String pattern, Object... args) {
-        if (this.listener != null) {
-            this.listener.on(id, node, action, step, pattern, args);
-        }
-    }
+    void onError(String error);
 }

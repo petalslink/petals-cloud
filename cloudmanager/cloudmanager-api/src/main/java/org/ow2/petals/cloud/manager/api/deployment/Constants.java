@@ -33,4 +33,6 @@ public interface Constants {
     public static final String PUPPET_SCRIPT_CLASSPATH = "classpath";
 
     public static final String PACKAGE_TYPE = "package";
+
+    public static final String PRIORITY = "priority";
 }

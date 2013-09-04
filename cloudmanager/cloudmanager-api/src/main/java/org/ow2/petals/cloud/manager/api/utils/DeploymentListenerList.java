@@ -17,8 +17,10 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA 
  *
  */
-package org.ow2.petals.cloud.manager.core.listeners;
+package org.ow2.petals.cloud.manager.api.utils;
 
+import com.google.common.collect.Lists;
+import org.ow2.petals.cloud.manager.api.deployment.Node;
 import org.ow2.petals.cloud.manager.api.listeners.DeploymentListener;
 
 import java.util.List;
@@ -31,13 +33,23 @@ public class DeploymentListenerList implements DeploymentListener {
 
     private List<DeploymentListener> listeners;
 
+    public DeploymentListenerList() {
+        this.listeners = Lists.newArrayList();
+    }
+
     public DeploymentListenerList(List<DeploymentListener> listeners) {
         this.listeners = listeners;
     }
 
-    public void on(String id, String step, String pattern, String... args) {
+    public void on(String id, Node node, String action, String step, String pattern, Object... args) {
         for(DeploymentListener listener : listeners) {
-            listener.on(id, step, pattern, args);
+            listener.on(id, node, action, step, pattern, args);
+        }
+    }
+
+    public void addListener(DeploymentListener listener) {
+        if (listener != null && listeners != null) {
+            listeners.add(listener);
         }
     }
 }

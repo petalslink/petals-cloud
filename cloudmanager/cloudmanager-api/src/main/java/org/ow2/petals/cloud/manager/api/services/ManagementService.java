@@ -22,6 +22,7 @@ package org.ow2.petals.cloud.manager.api.services;
 import org.ow2.petals.cloud.manager.api.CloudManagerException;
 import org.ow2.petals.cloud.manager.api.PaaS;
 import org.ow2.petals.cloud.manager.api.deployment.Deployment;
+import org.ow2.petals.cloud.manager.api.listeners.DeploymentListener;
 
 import java.util.List;
 
@@ -38,7 +39,7 @@ public interface ManagementService {
      * @return
      * @throws org.ow2.petals.cloud.manager.api.CloudManagerException
      */
-    PaaS create(Deployment deploymentDescriptor) throws CloudManagerException;
+    PaaS create(Deployment deploymentDescriptor, DeploymentListener deploymentListener) throws CloudManagerException;
 
     /**
      * Get all the PaaS
@@ -65,6 +66,6 @@ public interface ManagementService {
      * @return
      * @throws CloudManagerException
      */
-    boolean delete(String id) throws CloudManagerException;
+    boolean delete(String id, DeploymentListener deploymentListener) throws CloudManagerException;
 
 }

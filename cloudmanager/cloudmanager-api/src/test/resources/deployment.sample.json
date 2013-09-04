@@ -53,6 +53,9 @@
             "provider": "openstack.ow2.org",
             "properties": [
                 {
+                    "name": "priority", "value": "1000"
+                },
+                {
                     "name": "mode", "value": "master"
                 },
                 {
@@ -86,6 +89,9 @@
             "ports": [8080, 7700, 7800],
             "provider": "openstack.linagora.com",
             "properties": [
+                {
+                    "name": "priority", "value": "1"
+                },
                 {
                     "name": "mode", "value": "slave"
                 },

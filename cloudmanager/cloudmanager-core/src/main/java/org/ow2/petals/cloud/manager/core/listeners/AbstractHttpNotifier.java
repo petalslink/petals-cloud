@@ -23,6 +23,8 @@ import com.google.gson.Gson;
 import com.ning.http.client.AsyncCompletionHandler;
 import com.ning.http.client.AsyncHttpClient;
 import com.ning.http.client.Response;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 
@@ -30,6 +32,8 @@ import java.io.IOException;
  * @author Christophe Hamerling - chamerling@linagora.com
  */
 public abstract class AbstractHttpNotifier {
+
+    private static Logger logger = LoggerFactory.getLogger(AbstractHttpNotifier.class);
 
     protected void post(String endpoint, final Event e) {
         Gson gson = new Gson();
@@ -41,13 +45,15 @@ public abstract class AbstractHttpNotifier {
 
                 @Override
                 public Response onCompleted(Response response) throws Exception {
-                    System.out.println("Event sent to HTTP listener : " + e);
+                    if(logger.isDebugEnabled())
+                        logger.debug("Event sent to HTTP listener : " + e);
+
                     return response;
                 }
 
                 @Override
                 public void onThrowable(Throwable t) {
-                    System.err.println("Error while sending Event to listener : " + t.getMessage());
+                    logger.error("Error while sending Event to listener", t);
                 }
             });
         } catch (IOException e1) {
@@ -59,12 +65,15 @@ public abstract class AbstractHttpNotifier {
 
         public String id;
 
+        public String action;
+
         public String step;
 
         public String message;
 
-        public Event(String id, String step, String message) {
+        public Event(String id, String action, String step, String message) {
             this.id = id;
+            this.action = action;
             this.step = step;
             this.message = message;
         }
@@ -73,6 +82,7 @@ public abstract class AbstractHttpNotifier {
         public String toString() {
             return "Event{" +
                     "id='" + id + '\'' +
+                    ", action='" + action + '\'' +
                     ", step='" + step + '\'' +
                     ", message='" + message + '\'' +
                     '}';

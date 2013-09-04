@@ -19,21 +19,17 @@
  */
 package org.ow2.petals.cloud.manager.core.actions;
 
-import com.google.common.base.Predicate;
-import com.google.common.collect.Iterables;
-import com.google.common.collect.Lists;
 import net.schmizz.sshj.SSHClient;
-import org.apache.commons.io.FileUtils;
 import org.ow2.petals.cloud.manager.api.CloudManagerException;
 import org.ow2.petals.cloud.manager.api.actions.Context;
-import org.ow2.petals.cloud.manager.api.deployment.*;
-import org.ow2.petals.cloud.manager.api.utils.SysoutDeploymentListener;
+import org.ow2.petals.cloud.manager.api.deployment.Node;
+import org.ow2.petals.cloud.manager.api.listeners.DeploymentListener;
+import org.ow2.petals.cloud.manager.api.listeners.SSHListener;
 import org.ow2.petals.cloud.manager.core.utils.SSHUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.util.List;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -78,8 +74,8 @@ public abstract class RunRemoteScriptAction extends MonitoredAction {
      */
     protected abstract String getRemoteScriptPath(Node node, Context context) throws CloudManagerException;
 
-    public void doExecute(Context context) throws CloudManagerException {
-        Node node = getNode(context);
+    public void doExecute(final Context context) throws CloudManagerException {
+        final Node node = getNode(context);
         checkNotNull(node.getAccess());
 
         SSHClient client = SSHUtils.getClient(node);
@@ -102,7 +98,25 @@ public abstract class RunRemoteScriptAction extends MonitoredAction {
             logger.debug("Command to run {}", command);
         }
 
-        SSHUtils.executeScript(client, command, context.getListener());
+        DeploymentListener listener = context.getListener();
+        if (listener == null) {
+            listener = new DeploymentListener() {
+                public void on(String id, Node node, String action, String step, String pattern, Object... args) {
+                    logger.debug("Deployment " + id + ", node " + node.getId() + ", action: " + action + " , step " + step + ":" + pattern);
+                }
+            };
+        }
+
+        final DeploymentListener finalListener = listener;
+        SSHUtils.executeScript(client, command, new SSHListener() {
+            public void onMessage(String line) {
+                finalListener.on(context.getId(), node, "ssh", "exec", line);
+            }
+
+            public void onError(String error) {
+                finalListener.on(context.getId(), node, "ssh", "error", error);
+            }
+        });
     }
 
     @Override

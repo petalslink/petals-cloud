@@ -51,6 +51,11 @@ public class CreateVMAction extends MonitoredAction {
         if (logger.isDebugEnabled()) {
             logger.debug(result.toString());
         }
+        context.getListener().on(context.getId(), node, "create", "done", "Node has been created");
+
+        // FIXME : Make a choice
+        // TODO: return the node result in the context or merge relevant information in the input one...
+        context.setOutput("node", result);
     }
 
     @Override

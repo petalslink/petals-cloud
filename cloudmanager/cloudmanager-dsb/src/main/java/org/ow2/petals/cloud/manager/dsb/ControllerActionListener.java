@@ -17,31 +17,24 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA 
  *
  */
-package org.ow2.petals.cloud.manager.api.utils;
+package org.ow2.petals.cloud.manager.dsb;
 
 import org.ow2.petals.cloud.manager.api.deployment.Node;
 import org.ow2.petals.cloud.manager.api.listeners.DeploymentListener;
 
 /**
- * Ensure a not null deployment listener...
+ * We listen to node actions in order to notify the cloud controller about the current state of the deployment process.
  *
  * @author Christophe Hamerling - chamerling@linagora.com
  */
-public class NotNullDeploymentListener implements DeploymentListener {
+public class ControllerActionListener implements DeploymentListener {
 
-    public static DeploymentListener get(DeploymentListener listener) {
-        return new NotNullDeploymentListener(listener);
-    }
+    String endpoint;
 
-    public DeploymentListener listener;
-
-    public NotNullDeploymentListener(DeploymentListener listener) {
-        this.listener = listener;
+    public ControllerActionListener() {
     }
 
     public void on(String id, Node node, String action, String step, String pattern, Object... args) {
-        if (this.listener != null) {
-            this.listener.on(id, node, action, step, pattern, args);
-        }
+        System.out.println("DSB LISTENER " + node + " - action : " + action + " - step : " + step);
     }
 }

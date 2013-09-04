@@ -29,16 +29,24 @@ import org.ow2.petals.cloud.manager.api.CloudManagerException;
 import org.ow2.petals.cloud.manager.api.ProviderManager;
 import org.ow2.petals.cloud.manager.api.deployment.Node;
 import org.ow2.petals.cloud.manager.api.deployment.Provider;
+import org.ow2.petals.cloud.manager.api.deployment.utils.NodeHelper;
+import org.ow2.petals.cloud.manager.api.deployment.utils.PropertyHelper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.List;
 import java.util.Map;
 
 import static com.google.common.base.Preconditions.checkNotNull;
+import static org.ow2.petals.cloud.manager.api.deployment.utils.NodeHelper.getProperty;
+import static org.ow2.petals.cloud.manager.api.deployment.utils.PropertyHelper.hasMap;
 
 /**
  * @author Christophe Hamerling - chamerling@linagora.com
  */
 public class OpenStackProviderManager implements ProviderManager {
+
+    private static Logger logger = LoggerFactory.getLogger(OpenStackProviderManager.class);
 
     private Map<Provider, Nova> clients;
 
@@ -54,7 +62,7 @@ public class OpenStackProviderManager implements ProviderManager {
     }
 
     /**
-     * The supported API version
+     * The supported API version range
      * TODO
      *
      * @return
@@ -64,6 +72,8 @@ public class OpenStackProviderManager implements ProviderManager {
     }
 
     public Node createNode(final Provider provider, final Node node) throws CloudManagerException {
+        logger.debug("Creating node on provider {} : {}", provider, node);
+
         Nova client = getClient(provider);
         checkNotNull(client, "Can not create client with the provider information");
 
@@ -92,12 +102,17 @@ public class OpenStackProviderManager implements ProviderManager {
 
         ServerForCreate create = new ServerForCreate();
         create.setName(node.getName());
-        //create.setKeyName(properties.keyName);
+
+        if (getProperty(node, "iaas.key") != null) {
+            create.setKeyName((getProperty(node, "iaas.key")).getValue());
+        }
         create.setFlavorRef(flavor.getId());
         create.setImageRef(image.getId());
         Map<String, String> meta = Maps.newHashMap();
 
-        // FIXME : Use some props from the API.
+        // add all the properties from the input node, will b used if needed...
+        meta.putAll(hasMap(node.getProperties()));
+
         //meta.put("controller.endpoint", env.controllerEndpoint);
         //meta.put("container.id", env.localContainerId);
         //meta.put("virtual.id", env.virtualContainerId);

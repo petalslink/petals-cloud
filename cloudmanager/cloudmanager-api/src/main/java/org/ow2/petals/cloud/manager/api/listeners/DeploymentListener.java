@@ -19,8 +19,10 @@
  */
 package org.ow2.petals.cloud.manager.api.listeners;
 
+import org.ow2.petals.cloud.manager.api.deployment.Node;
+
 /**
- * Deployment listener is used to track the deployment steps
+ * Deployment listener is used to track node deployment steps
  *
  * @author Christophe Hamerling - chamerling@linagora.com
  */
@@ -28,9 +30,11 @@ public interface DeploymentListener {
 
     /**
      * @param id the deployment ID (unique)
-     * @param step
-     * @param pattern
+     * @param node node listening to
+     * @param action : current action
+     * @param step : current step in the action
+     * @param pattern message to send
      * @param args
      */
-    void on(String id, String step, String pattern, String... args);
+    void on(String id, Node node, String action, String step, String pattern, Object... args);
 }

@@ -23,6 +23,9 @@ import com.google.common.annotations.VisibleForTesting;
 import org.apache.felix.gogo.commands.Command;
 import org.apache.felix.gogo.commands.Option;
 import org.ow2.petals.cloud.manager.api.CloudManager;
+import org.ow2.petals.cloud.manager.api.deployment.Node;
+import org.ow2.petals.cloud.manager.api.listeners.DeploymentListener;
+import org.ow2.petals.cloud.manager.api.utils.SysoutDeploymentListener;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -42,7 +45,7 @@ public class DeletePaaSCommand extends BaseCommand {
     @Override
     protected Object doExecute() throws Exception {
         System.out.println("Deleting the PaaS " + id);
-        cloudManager.getManagementService().delete(id);
+        cloudManager.getManagementService().delete(id, new SysoutDeploymentListener());
         return null;
     }
 

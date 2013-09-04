@@ -51,7 +51,7 @@ public abstract class BaseCommand extends OsgiCommandSupport {
      * @param type
      * @return
      */
-    protected DeploymentProvider getSupport(final String type) {
+    protected DeploymentProvider getDeploymentProvider(final String type) {
         checkNotNull(type);
         Optional<DeploymentProvider> support = Iterables.tryFind(supportedRuntimes, new Predicate<DeploymentProvider>() {
             public boolean apply(DeploymentProvider input) {

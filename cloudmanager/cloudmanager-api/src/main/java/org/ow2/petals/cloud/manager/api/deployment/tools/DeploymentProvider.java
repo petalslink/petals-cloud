@@ -20,14 +20,16 @@
 package org.ow2.petals.cloud.manager.api.deployment.tools;
 
 import org.ow2.petals.cloud.manager.api.deployment.Deployment;
+import org.ow2.petals.cloud.manager.api.listeners.DeploymentListener;
 
+import java.util.List;
 import java.util.Map;
 
 /**
- * Deployment Providers are custom hooks to be used by providers in order to enrich initial deployment.
+ * Deployment Providers are custom hooks to be used by providers in order to enrich initial deployment descriptor.
  * For example, a provider may be able to add some configuration files, some scripts, add nodes, update VM properties...
  *
- * The Deployment Provider is retrieve at deployment time and populate is called before the first call to the provider API.
+ * The Deployment Provider is retrieved at deployment time and #populate automatically is called before the first call to the provider API.
  *
  * @author Christophe Hamerling - chamerling@linagora.com
  */
@@ -40,6 +42,13 @@ public interface DeploymentProvider {
      * @return
      */
     void populate(Deployment deployment, Map<String, String> args);
+
+    /**
+     * Get the list of deployment listeners to notify on deployment actions.
+     *
+     * @return
+     */
+    List<DeploymentListener> getDeploymentListeners();
 
     /**
      * DeploymentProvider type

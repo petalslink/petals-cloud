@@ -26,6 +26,8 @@ import org.apache.felix.gogo.commands.Option;
 import org.ow2.petals.cloud.manager.api.CloudManager;
 import org.ow2.petals.cloud.manager.api.deployment.Deployment;
 import org.ow2.petals.cloud.manager.api.deployment.tools.DeploymentProvider;
+import org.ow2.petals.cloud.manager.api.deployment.utils.PropertyHelper;
+import org.ow2.petals.cloud.manager.api.utils.DeploymentListenerList;
 
 import java.util.List;
 import java.util.Map;
@@ -56,19 +58,26 @@ public class CreatePaaSCommand extends BaseCommand {
     @Override
     protected Object doExecute() throws Exception {
 
-        DeploymentProvider deploymentProvider = getSupport(type);
+        DeploymentProvider deploymentProvider = getDeploymentProvider(type);
         if (deploymentProvider == null) {
             throw new Exception("Can not find deployment provider for type : " + type);
         }
+
+        // TODO : The provider must provide a set of requirements which must be filled.
         Map<String, String> args = Maps.newHashMap();
         args.put("size", "" + size);
         // TODO : more args
 
+        // set input values to the descriptor
         Deployment descriptor = new Deployment();
+        descriptor.getProperties().add(PropertyHelper.get("size", null, "" + size));
+        descriptor.getProperties().add(PropertyHelper.get("iaas", null, iaas));
+
         deploymentProvider.populate(descriptor, args);
+        deploymentProvider.getDeploymentListeners();
 
         // TODO : Async
-        this.cloudManager.getManagementService().create(descriptor);
+        this.cloudManager.getManagementService().create(descriptor, new DeploymentListenerList(deploymentProvider.getDeploymentListeners()));
         return "PaaS has been created with size " + size;
     }
 

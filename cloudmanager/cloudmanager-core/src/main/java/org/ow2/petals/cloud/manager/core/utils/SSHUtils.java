@@ -33,7 +33,10 @@ import org.ow2.petals.cloud.manager.api.CloudManagerException;
 import org.ow2.petals.cloud.manager.api.deployment.Access;
 import org.ow2.petals.cloud.manager.api.deployment.Node;
 import org.ow2.petals.cloud.manager.api.listeners.DeploymentListener;
+import org.ow2.petals.cloud.manager.api.listeners.SSHListener;
 import org.ow2.petals.cloud.manager.api.utils.NotNullDeploymentListener;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.*;
 import java.security.PublicKey;
@@ -45,6 +48,8 @@ import static com.google.common.base.Preconditions.checkNotNull;
  * @author Christophe Hamerling - chamerling@linagora.com
  */
 public class SSHUtils {
+
+    private static Logger logger = LoggerFactory.getLogger(SSHUtils.class);
 
     private SSHUtils() {
     }
@@ -126,9 +131,8 @@ public class SSHUtils {
      * @param client the SSH client instance used to run the script
      * @param script the script content
      */
-    public static void executeScript(SSHClient client, String script, DeploymentListener listener) throws CloudManagerException {
+    public static void executeScript(SSHClient client, String script, SSHListener listener) throws CloudManagerException {
         checkNotNull(client);
-        final DeploymentListener l = NotNullDeploymentListener.get(listener);
 
         Session session = null;
         try {
@@ -140,7 +144,18 @@ public class SSHUtils {
         try {
             session.allocateDefaultPTY();
             Session.Command command = session.exec(script);
-            SSHUtils.listen(command, l);
+            if (listener == null) {
+                listener = new SSHListener() {
+                    public void onMessage(String line) {
+                        logger.info(line);
+                    }
+
+                    public void onError(String error) {
+                        logger.error(error);
+                    }
+                };
+            }
+            SSHUtils.listen(command, listener);
             command.join();
             final Integer exitStatus = command.getExitStatus();
             session.close();
@@ -162,7 +177,7 @@ public class SSHUtils {
      * @param command
      * @param listener
      */
-    public static void listen(final Session.Command command, final DeploymentListener listener) {
+    public static void listen(final Session.Command command, final SSHListener listener) {
         checkNotNull(command);
 
         // launch new threads to listen to command streams...
@@ -174,7 +189,7 @@ public class SSHUtils {
                     String line;
                     while ((line = reader.readLine()) != null) {
                         if (!line.isEmpty()) {
-                            listener.on("ssh-out", "out", "%s : %s", "REMOTE-TODO", line);
+                            listener.onMessage(line);
                         }
                     }
                 } catch (IOException e) {
@@ -192,7 +207,7 @@ public class SSHUtils {
                     String line;
                     while ((line = reader.readLine()) != null) {
                         if (!line.isEmpty()) {
-                            listener.on("ssh-error", "error", " %s : %s", "REMOTE-TODO", line);
+                            listener.onError(line);
                         }
                     }
                 } catch (IOException e) {

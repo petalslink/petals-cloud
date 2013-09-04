@@ -21,67 +21,108 @@ package org.ow2.petals.cloud.manager.core.services;
 
 import com.google.common.base.Predicate;
 import com.google.common.collect.Iterables;
+import com.google.common.collect.Ordering;
+import com.google.common.primitives.Ints;
 import org.ow2.petals.cloud.manager.api.CloudManagerException;
 import org.ow2.petals.cloud.manager.api.PaaS;
 import org.ow2.petals.cloud.manager.api.ProviderManager;
 import org.ow2.petals.cloud.manager.api.actions.Context;
 import org.ow2.petals.cloud.manager.api.deployment.Deployment;
-import org.ow2.petals.cloud.manager.api.listeners.NodeManagerListener;
+import org.ow2.petals.cloud.manager.api.deployment.Node;
+import org.ow2.petals.cloud.manager.api.deployment.utils.NodeHelper;
+import org.ow2.petals.cloud.manager.api.listeners.DeploymentListener;
 import org.ow2.petals.cloud.manager.core.actions.CreateVMAction;
-import org.ow2.petals.cloud.manager.core.actions.RunRemoteScriptAction;
-import org.ow2.petals.cloud.manager.core.actions.RunScriptsAction;
+import org.ow2.petals.cloud.manager.api.utils.DeploymentListenerList;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
- * Default implementation of the IaaS/PaaS ManagementService.
+ * Default implementation of the IaaS/PaaS ManagementService. The deployment descriptor is filled with all the information that is required to create the PaaS.
+ * This deployment information may be updated by the deployment process.
  *
  * @author Christophe Hamerling - chamerling@linagora.com
  */
 public class DefaultManagementService implements org.ow2.petals.cloud.manager.api.services.ManagementService {
 
+    private static Logger logger = LoggerFactory.getLogger(DefaultManagementService.class);
+
     private List<ProviderManager> providers;
 
-    private NodeManagerListener listener;
+    private DeploymentListener listener;
 
-    public DefaultManagementService(List<ProviderManager> providers, NodeManagerListener listener) {
+    public DefaultManagementService(List<ProviderManager> providers, DeploymentListener listener) {
         this.providers = providers;
         this.listener = listener;
     }
 
-    public PaaS create(Deployment descriptor) throws CloudManagerException {
+    public PaaS create(Deployment descriptor, DeploymentListener deploymentListener) throws CloudManagerException {
         checkNotNull(descriptor, "Deployment descriptor can not be null");
         if (descriptor.getId() == null) {
             descriptor.setId(UUID.randomUUID().toString());
         }
 
-        // NOTE : will be nice to do it with a workflow instead of this dirty Java code...
+        // create a set of listeners with the current deployment lifetime
+        DeploymentListenerList listeners = new DeploymentListenerList();
+        listeners.addListener(this.listener);
+        listeners.addListener(deploymentListener);
 
-        for(org.ow2.petals.cloud.manager.api.deployment.Node node : descriptor.getNodes()) {
+        // FIXME : will be nice to do it with a workflow instead of this dirty Java code...
+
+        /*
+         * For each node:
+         * - Create the VM, get back the IP and update the node information with create results (VM properties)
+         * - Copy files if any defined
+         * - Install additionnal software if any defined
+         * - Run final scripts if any defined
+         */
+
+        // deploy nodes based on their priority
+        for(org.ow2.petals.cloud.manager.api.deployment.Node node : getOrderedNodes(descriptor.getNodes())) {
+            if (logger.isDebugEnabled()) {
+                logger.debug("Deploying node {}", node);
+            }
+
             if (node.getProvider() != null) {
                 ProviderManager provider = getProvider(node.getProvider());
                 if (provider != null) {
+
+                    listeners.on(descriptor.getId(), node, "create", "init", "Creating VM");
 
                     CreateVMAction create = new CreateVMAction();
                     Context context = new Context(descriptor.getId());
                     context.setProviderManager(provider);
                     context.setNode(node);
+                    context.setListener(deploymentListener);
                     create.execute(context);
+
+                    /*
+                    CopyFilesAction copyFiles = new CopyFilesAction();
+                    try {
+                        copyFiles.execute(context);
+                    } catch (CloudManagerException e) {
+                        logger.warn("Can not copy files to remote node {} : {}", node, e);
+                    }
+                    */
 
                     //RunRemoteScriptAction install = new RunRemoteScriptAction();
                     //install.execute(context);
 
-                    RunScriptsAction run = new RunScriptsAction();
-                    run.execute(context);
+                    //RunScriptsAction run = new RunScriptsAction();
+                    //run.execute(context);
 
                 } else {
                     //
+                    logger.warn("Can not find the provider {} defined in node {}", node.getProvider(), node);
                 }
             } else {
                 // skip
+                logger.warn("Can not find provider ID for node {}", node);
             }
         }
         return null;
@@ -101,6 +142,15 @@ public class DefaultManagementService implements org.ow2.petals.cloud.manager.ap
         }).orNull();
     }
 
+    protected List<Node> getOrderedNodes(List<Node> nodes) {
+        Ordering<Node> ordering = Ordering.from(new Comparator<Node>() {
+            public int compare(Node a, Node b) {
+                return Ints.compare(NodeHelper.getPriority(b), NodeHelper.getPriority(a));
+            }
+        });
+        return ordering.sortedCopy(nodes);
+    }
+
     public List<PaaS> list() throws CloudManagerException {
         return null;
     }
@@ -109,8 +159,8 @@ public class DefaultManagementService implements org.ow2.petals.cloud.manager.ap
         return null;
     }
 
-    public boolean delete(String id) throws CloudManagerException {
-        return false;
+    public boolean delete(String id, DeploymentListener listener) throws CloudManagerException {
+        throw new CloudManagerException("Not implemented");
     }
 
 }
