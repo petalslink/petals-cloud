@@ -1,5 +1,7 @@
 # Petals Cloud
 
+[![Build Status](https://travis-ci.org/petalslink/petals-cloud.png?branch=master)](https://travis-ci.org/petalslink/petals-cloud)
+
 Push Petals to the Cloud.
 
 ## Howto
