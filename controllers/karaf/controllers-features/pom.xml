@@ -29,7 +29,7 @@
 
         <dependency>
             <groupId>org.ow2.petals.cloud</groupId>
-            <artifactId>commands</artifactId>
+            <artifactId>controller-commands</artifactId>
             <version>${project.version}</version>
             <scope>provided</scope>
         </dependency>
