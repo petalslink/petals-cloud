@@ -28,6 +28,8 @@ import org.ow2.petals.cloud.manager.api.listeners.DeploymentListener;
 import java.util.HashMap;
 import java.util.Map;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 /**
  * Execution context
  *
@@ -57,8 +59,13 @@ public class Context {
      */
     private Node node;
 
+    /**
+     * The context ID is mandatory. This id will help to track actions and deployments.
+     *
+     * @param id
+     */
     public Context(String id) {
-        this.id = id;
+        this.id = checkNotNull(id);
         this.params = new HashMap<String, Object>();
         this.output = new HashMap<String, Object>();
     }
