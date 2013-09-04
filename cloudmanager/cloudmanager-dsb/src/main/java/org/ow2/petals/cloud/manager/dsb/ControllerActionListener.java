@@ -24,6 +24,7 @@ import org.ow2.petals.cloud.manager.api.listeners.DeploymentListener;
 
 /**
  * We listen to node actions in order to notify the cloud controller about the current state of the deployment process.
+ * The current implementation just send the event to the Petals DSB controller which will handle it and create required information.
  *
  * @author Christophe Hamerling - chamerling@linagora.com
  */
@@ -36,5 +37,6 @@ public class ControllerActionListener implements DeploymentListener {
 
     public void on(String id, Node node, String action, String step, String pattern, Object... args) {
         System.out.println("DSB LISTENER " + node + " - action : " + action + " - step : " + step);
+        // TODO
     }
 }
