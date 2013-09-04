@@ -74,7 +74,6 @@ public class CreatePaaSCommand extends BaseCommand {
         descriptor.getProperties().add(PropertyHelper.get("iaas", null, iaas));
 
         deploymentProvider.populate(descriptor, args);
-        deploymentProvider.getDeploymentListeners();
 
         // TODO : Async
         this.cloudManager.getManagementService().create(descriptor, new DeploymentListenerList(deploymentProvider.getDeploymentListeners()));
