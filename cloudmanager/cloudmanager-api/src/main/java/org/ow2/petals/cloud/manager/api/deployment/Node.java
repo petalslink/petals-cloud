@@ -83,6 +83,7 @@ public class Node {
         properties = Lists.newArrayList();
         privateIpAddress = Lists.newArrayList();
         publicIpAddress = Lists.newArrayList();
+        softwares = Lists.newArrayList();
     }
 
     public String getName() {
