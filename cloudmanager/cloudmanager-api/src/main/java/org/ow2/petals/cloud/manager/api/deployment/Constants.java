@@ -35,4 +35,6 @@ public interface Constants {
     public static final String PACKAGE_TYPE = "package";
 
     public static final String PRIORITY = "priority";
+
+    public static final String URL_TYPE = "url";
 }

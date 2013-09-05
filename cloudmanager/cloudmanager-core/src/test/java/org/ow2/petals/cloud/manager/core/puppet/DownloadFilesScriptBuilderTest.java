@@ -20,22 +20,19 @@
 package org.ow2.petals.cloud.manager.core.puppet;
 
 import com.google.common.collect.Lists;
-import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 import org.ow2.petals.cloud.manager.api.CloudManagerException;
 import org.ow2.petals.cloud.manager.api.actions.Context;
-import org.ow2.petals.cloud.manager.api.deployment.Node;
-import org.ow2.petals.cloud.manager.api.deployment.Property;
+import org.ow2.petals.cloud.manager.api.deployment.*;
 
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertNotNull;
-import static junit.framework.Assert.assertTrue;
+import static junit.framework.Assert.*;
+import static org.junit.Assert.assertFalse;
 
 /**
  * @author Christophe Hamerling - chamerling@linagora.com
@@ -49,11 +46,11 @@ public class DownloadFilesScriptBuilderTest {
         Node node = new Node();
         Property p1 = new Property();
         p1.setName("foo");
-        p1.setType("uri");
+        p1.setType(Constants.URL_TYPE);
         p1.setValue("http://foo/bar.zip");
         Property p2 = new Property();
         p2.setName("foobar");
-        p2.setType("uri");
+        p2.setType(Constants.URL_TYPE);
         p2.setValue("http://foo/bar/baz.zip");
         Property p3 = new Property();
         p3.setName("foobarbaz");
@@ -72,21 +69,76 @@ public class DownloadFilesScriptBuilderTest {
         Node node = new Node();
         Property p1 = new Property();
         p1.setName("foo");
-        p1.setType("uri");
+        p1.setType(Constants.URL_TYPE);
         p1.setValue("http://foo/bar.zip");
         Property p2 = new Property();
         p2.setName("foobar");
-        p2.setType("uri");
+        p2.setType(Constants.URL_TYPE);
         p2.setValue("http://foo/bar/baz.zip");
         Property p3 = new Property();
         p3.setName("foobarbaz");
-        p3.setType("uri");
+        p3.setType(Constants.URL_TYPE);
         p3.setValue("http://foo/bar/baz/buz.zip");
         node.setProperties(Lists.newArrayList(p1, p2, p3));
         String out = builder.build(node, new Context(UUID.randomUUID().toString()));
         assertNotNull(out);
         assertTrue(out.contains("http://foo/bar.zip") && out.contains("http://foo/bar/baz.zip") && out.contains("http://foo/bar/baz/buz.zip"));
         System.out.println(out);
+    }
+
+    @Test
+    public void testDownloadDefinedSoftware() throws CloudManagerException {
+        DownloadFilesScriptBuilder builder = new DownloadFilesScriptBuilder();
+        Software s = new Software();
+        s.setName("foo");
+        s.setType(Constants.URL_TYPE);
+        s.setSource("http://foobar");
+
+        Node node = new Node();
+        node.getSoftwares().add(s.getName());
+
+        Deployment descriptor = new Deployment();
+        descriptor.getSoftwares().add(s);
+
+        Context context = new Context(UUID.randomUUID().toString());
+        context.setDescriptor(descriptor);
+
+        String out = builder.build(node, context);
+        assertNotNull(out);
+        System.out.println(out);
+        assertTrue(out.contains(s.getSource()));
+    }
+
+    @Test
+    public void testDownloadPartialDefinedSoftware() throws CloudManagerException {
+        DownloadFilesScriptBuilder builder = new DownloadFilesScriptBuilder();
+        Software s = new Software();
+        s.setName("foo");
+        s.setType(Constants.URL_TYPE);
+        s.setSource("http://foobar");
+
+        // define a software with package but http source will not be included (bad source)
+        Software ss = new Software();
+        ss.setName("bar");
+        ss.setType(Constants.PACKAGE_TYPE);
+        ss.setSource("http://foobarbaz");
+
+        Node node = new Node();
+        node.getSoftwares().add(s.getName());
+
+        Deployment descriptor = new Deployment();
+        descriptor.getSoftwares().add(s);
+        descriptor.getSoftwares().add(ss);
+
+        Context context = new Context(UUID.randomUUID().toString());
+        context.setDescriptor(descriptor);
+
+        String out = builder.build(node, context);
+        assertNotNull(out);
+        System.out.println(out);
+        assertTrue(out.contains(s.getSource()));
+        assertFalse(out.contains(ss.getSource()));
+
     }
 
 }

@@ -25,15 +25,19 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import org.ow2.petals.cloud.manager.api.actions.Context;
+import org.ow2.petals.cloud.manager.api.deployment.Constants;
 import org.ow2.petals.cloud.manager.api.deployment.Node;
 import org.ow2.petals.cloud.manager.api.deployment.Property;
+import org.ow2.petals.cloud.manager.api.deployment.Software;
 
 import java.util.List;
 import java.util.Map;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 /**
- * TODO : get files to install in the software section of the node and the deployment descriptor
- * TODO : cf InstallPackagesScript
+ * Create the script which will download all the defined files from HTTP locations.
+ * This is the case on each node for node properties (URL type) and required software.
  *
  * @author Christophe Hamerling - chamerling@linagora.com
  */
@@ -60,10 +64,12 @@ public class DownloadFilesScriptBuilder extends ClasspathScriptBuilder {
      */
     protected List<Map<String, String>> getURIs(Node node, Context context) {
 
+        List<Map<String, String>> result = Lists.newArrayList();
+
         // get node uris
         Iterable<Map<String, String>> n = Iterables.transform(Iterables.filter(node.getProperties(), new Predicate<Property>() {
             public boolean apply(org.ow2.petals.cloud.manager.api.deployment.Property input) {
-                return input.getType() != null && input.getType().equals("uri") && input.getValue() != null && input.getValue().startsWith("http://");
+                return input.getType() != null && input.getType().equals(Constants.URL_TYPE) && input.getValue() != null && input.getValue().startsWith("http://");
             }
         }), new Function<Property, Map<String, String>>() {
             public Map<String, String> apply(org.ow2.petals.cloud.manager.api.deployment.Property input) {
@@ -73,6 +79,42 @@ public class DownloadFilesScriptBuilder extends ClasspathScriptBuilder {
             }
         });
 
-        return Lists.newArrayList(n);
+        if (n != null) {
+            Iterables.addAll(result, n);
+        }
+
+        // get software uris
+        Iterable<Map<String, String>> softwares = Iterables.transform(getSoftwares(node, context), new Function<Software, Map<String, String>>() {
+            public Map<String, String> apply(org.ow2.petals.cloud.manager.api.deployment.Software input) {
+                return ImmutableMap.of("source", input.getSource(), "destination", input.getName());
+            }
+        });
+        if (softwares != null) {
+            Iterables.addAll(result, softwares);
+        }
+        return result;
+    }
+
+    /**
+     * Get all the software which can be downloaded from URLs ie type is URL and source starts with http and name is used in node.
+     *
+     * @param node
+     * @param context
+     * @return
+     */
+    protected List<Software> getSoftwares(final Node node, final Context context) {
+        checkNotNull(node);
+
+        if (node.getSoftwares() == null || context.getDescriptor() == null || context.getDescriptor().getSoftwares() == null) {
+            return Lists.newArrayList();
+        }
+
+        return Lists.newArrayList(Iterables.filter(context.getDescriptor().getSoftwares(), new Predicate<Software>() {
+            public boolean apply(org.ow2.petals.cloud.manager.api.deployment.Software input) {
+                return input.getType() != null && input.getType().equals(Constants.URL_TYPE)
+                        && input.getSource() != null && input.getSource().startsWith("http://")
+                        && node.getSoftwares() != null && node.getSoftwares().contains(input.getName());
+            }
+        }));
     }
 }

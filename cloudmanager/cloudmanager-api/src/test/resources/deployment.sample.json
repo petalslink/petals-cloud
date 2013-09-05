@@ -29,13 +29,13 @@
     "softwares": [
         {
             "name" : "petals",
-            "type" : "file",
+            "type" : "url",
             "version": "5.0-RC1",
             "source": "http://petals.ow2.org/downloads/petals-esb-5.0-RC1.zip"
         },
         {
-            "name" : "openjdk-8",
-            "type" : "deb",
+            "name" : "openjdk-6-jdk",
+            "type" : "package",
             "version": "8"
         }
     ],
