@@ -95,11 +95,7 @@ public class PuppetRunAction extends RunRemoteScriptAction {
 
     @Override
     protected String getCommandToRun(Node node, Context context) throws CloudManagerException {
-        return "while ! which puppet &> /dev/null ; " +
-                "do echo 'Puppet command not found. Waiting for userdata.sh script to finish (10s)' " +
-                "&& sleep 10; " +
-                "done " +
-                "&& sudo puppet apply --detailed-exitcodes --debug --verbose " + getRemoteScriptPath(node, context);
+        return String.format(org.ow2.petals.cloud.manager.core.puppet.Constants.PUPPET_RUN_COMMAND_PATTERN, getRemoteScriptPath(node, context));
     }
 
     /**

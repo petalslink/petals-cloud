@@ -46,11 +46,11 @@ public class DownloadFilesScriptBuilderTest {
         Node node = new Node();
         Property p1 = new Property();
         p1.setName("foo");
-        p1.setType(Constants.URL_TYPE);
+        p1.setType(org.ow2.petals.cloud.manager.api.deployment.Constants.URL_TYPE);
         p1.setValue("http://foo/bar.zip");
         Property p2 = new Property();
         p2.setName("foobar");
-        p2.setType(Constants.URL_TYPE);
+        p2.setType(org.ow2.petals.cloud.manager.api.deployment.Constants.URL_TYPE);
         p2.setValue("http://foo/bar/baz.zip");
         Property p3 = new Property();
         p3.setName("foobarbaz");
@@ -69,15 +69,15 @@ public class DownloadFilesScriptBuilderTest {
         Node node = new Node();
         Property p1 = new Property();
         p1.setName("foo");
-        p1.setType(Constants.URL_TYPE);
+        p1.setType(org.ow2.petals.cloud.manager.api.deployment.Constants.URL_TYPE);
         p1.setValue("http://foo/bar.zip");
         Property p2 = new Property();
         p2.setName("foobar");
-        p2.setType(Constants.URL_TYPE);
+        p2.setType(org.ow2.petals.cloud.manager.api.deployment.Constants.URL_TYPE);
         p2.setValue("http://foo/bar/baz.zip");
         Property p3 = new Property();
         p3.setName("foobarbaz");
-        p3.setType(Constants.URL_TYPE);
+        p3.setType(org.ow2.petals.cloud.manager.api.deployment.Constants.URL_TYPE);
         p3.setValue("http://foo/bar/baz/buz.zip");
         node.setProperties(Lists.newArrayList(p1, p2, p3));
         String out = builder.build(node, new Context(UUID.randomUUID().toString()));
@@ -91,7 +91,7 @@ public class DownloadFilesScriptBuilderTest {
         DownloadFilesScriptBuilder builder = new DownloadFilesScriptBuilder();
         Software s = new Software();
         s.setName("foo");
-        s.setType(Constants.URL_TYPE);
+        s.setType(org.ow2.petals.cloud.manager.api.deployment.Constants.URL_TYPE);
         s.setSource("http://foobar");
 
         Node node = new Node();
@@ -114,13 +114,13 @@ public class DownloadFilesScriptBuilderTest {
         DownloadFilesScriptBuilder builder = new DownloadFilesScriptBuilder();
         Software s = new Software();
         s.setName("foo");
-        s.setType(Constants.URL_TYPE);
+        s.setType(org.ow2.petals.cloud.manager.api.deployment.Constants.URL_TYPE);
         s.setSource("http://foobar");
 
         // define a software with package but http source will not be included (bad source)
         Software ss = new Software();
         ss.setName("bar");
-        ss.setType(Constants.PACKAGE_TYPE);
+        ss.setType(org.ow2.petals.cloud.manager.api.deployment.Constants.PACKAGE_TYPE);
         ss.setSource("http://foobarbaz");
 
         Node node = new Node();

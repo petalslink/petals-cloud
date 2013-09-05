@@ -25,6 +25,8 @@ import org.ow2.petals.cloud.manager.api.deployment.Constants;
 import org.ow2.petals.cloud.manager.api.deployment.Node;
 import org.ow2.petals.cloud.manager.api.deployment.Property;
 
+import java.util.List;
+
 import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
@@ -43,7 +45,18 @@ public class NodeHelper {
      * @return
      */
     public static final Property getProperty(Node node, final String name) {
-        return Iterables.tryFind(node.getProperties(), new Predicate<Property>() {
+        return getProperty(node.getProperties(), name);
+    }
+
+    /**
+     * Get a property from a set of properties or null if not found
+     *
+     * @param properties
+     * @param name
+     * @return
+     */
+    public static final Property getProperty(List<Property> properties, final String name) {
+        return Iterables.tryFind(properties, new Predicate<Property>() {
             public boolean apply(org.ow2.petals.cloud.manager.api.deployment.Property property) {
                 return property != null && property.getName() != null && property.getName().equals(name);
             }
@@ -59,6 +72,19 @@ public class NodeHelper {
     public static final void setPriority(Node node, int priority) {
         checkNotNull(node);
         node.getProperties().add(PropertyHelper.getPriorityProperty(priority));
+    }
+
+    /**
+     * Create a property from values and set it to node
+     *
+     * @param node
+     * @param name
+     * @param type
+     * @param value
+     */
+    public static final void setProperty(Node node, String name, String type, String value) {
+        checkNotNull(node);
+        node.getProperties().add(PropertyHelper.get(name, type, value));
     }
 
     /**

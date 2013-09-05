@@ -36,7 +36,10 @@ public interface ManagementService {
     /**
      * Create a new PaaS from the deployment descriptor
      *
-     * @return
+     * @param deploymentDescriptor the descriptor contains all the required information to deploy and configure the PaaS
+     * @param deploymentListener a listener to receive deployment progress
+     *
+     * @return the created PaaS
      * @throws org.ow2.petals.cloud.manager.api.CloudManagerException
      */
     PaaS create(Deployment deploymentDescriptor, DeploymentListener deploymentListener) throws CloudManagerException;

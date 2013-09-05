@@ -17,30 +17,17 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA 
  *
  */
-package org.ow2.petals.cloud.manager.openstack;
-
-import com.google.common.base.Function;
-import com.google.common.collect.Lists;
-import com.woorea.openstack.nova.model.Server;
-import org.ow2.petals.cloud.manager.api.deployment.Node;
+package org.ow2.petals.cloud.manager.core.puppet;
 
 /**
  * @author Christophe Hamerling - chamerling@linagora.com
  */
-public class Adapter implements Function<Server, Node> {
+public class Constants {
 
-    public Node apply(com.woorea.openstack.nova.model.Server input) {
-        Node node = new Node();
-        node.setName(input.getName());
-        node.setId(input.getId());
-        node.setProvider("openstack");
-        node.setPrivateIpAddress(Lists.newArrayList(input.getAccessIPv4()));
+    public static final String PUPPET_RUN_COMMAND_PATTERN = "while ! which puppet &> /dev/null ; " +
+            "do echo 'Puppet command not found. Waiting for userdata.sh script to finish (10s)' " +
+            "&& sleep 10; " +
+            "done " +
+            "&& sudo puppet apply --detailed-exitcodes --debug --verbose %s";
 
-        // TODO : More
-        return node;
-    }
-
-    public static final Node to(Server server) {
-        return new Adapter().apply(server);
-    }
 }

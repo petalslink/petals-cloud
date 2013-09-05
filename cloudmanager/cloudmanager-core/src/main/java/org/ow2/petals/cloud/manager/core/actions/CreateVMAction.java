@@ -47,15 +47,18 @@ public class CreateVMAction extends MonitoredAction {
         logger.info("Creating new node on {}", provider.getProviderName());
 
         Node result = provider.createNode(account, node);
-        logger.info("Node {} is started on provider {}", result.getId(), provider.getProviderName());
+        logger.info("Node {} is created on provider {}", result.getId(), provider.getProviderName());
         if (logger.isDebugEnabled()) {
             logger.debug(result.toString());
         }
-        context.getListener().on(context.getId(), node, "create", "done", "Node has been created");
+
+        if (context.getListener() != null) {
+            context.getListener().on(context.getId(), node, "create", "done", "Node has been created");
+        }
 
         // FIXME : Make a choice
         // TODO: return the node result in the context or merge relevant information in the input one...
-        context.setOutput("node", result);
+        context.setOutput("node." + node.getId(), result);
     }
 
     @Override

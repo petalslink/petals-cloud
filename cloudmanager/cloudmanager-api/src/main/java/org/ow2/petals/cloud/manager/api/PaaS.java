@@ -21,6 +21,7 @@ package org.ow2.petals.cloud.manager.api;
 
 import org.ow2.petals.cloud.manager.api.deployment.Node;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -46,9 +47,13 @@ public class PaaS {
 
     private Date createdAt;
 
+    /**
+     * List of nodes composing the PaaS
+     */
     private List<Node> nodes;
 
     public PaaS() {
+        this.nodes = new ArrayList<Node>();
     }
 
     public String getId() {

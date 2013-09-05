@@ -26,11 +26,16 @@ import com.google.common.collect.Iterables;
 import net.schmizz.sshj.SSHClient;
 import net.schmizz.sshj.common.SecurityUtils;
 import net.schmizz.sshj.connection.channel.direct.Session;
+import net.schmizz.sshj.transport.TransportException;
 import net.schmizz.sshj.transport.verification.HostKeyVerifier;
+import net.schmizz.sshj.userauth.UserAuthException;
+import net.schmizz.sshj.userauth.keyprovider.OpenSSHKeyFile;
+import net.schmizz.sshj.userauth.method.AuthMethod;
 import net.schmizz.sshj.xfer.InMemorySourceFile;
 import org.apache.commons.io.IOUtils;
 import org.ow2.petals.cloud.manager.api.CloudManagerException;
 import org.ow2.petals.cloud.manager.api.deployment.Access;
+import org.ow2.petals.cloud.manager.api.deployment.Credentials;
 import org.ow2.petals.cloud.manager.api.deployment.Node;
 import org.ow2.petals.cloud.manager.api.listeners.DeploymentListener;
 import org.ow2.petals.cloud.manager.api.listeners.SSHListener;
@@ -66,7 +71,7 @@ public class SSHUtils {
         }
     }
 
-    public static SSHClient newClient(String hostname, int port, Access adminAccess) throws IOException {
+    public static SSHClient newClient(String hostname, int port, Access adminAccess) throws CloudManagerException {
         return newClient(hostname, port, adminAccess, DEFAULT_READ_TIMEOUT);
     }
 
@@ -76,7 +81,7 @@ public class SSHUtils {
      */
     public static SSHClient newClient(
             String hostname, int port, Access adminAccess, int timeoutInMillis
-    ) throws IOException {
+    ) throws CloudManagerException {
         checkArgument(timeoutInMillis >= 0, "timeoutInMillis should be positive or 0");
         final SSHClient client = new SSHClient();
         client.addHostKeyVerifier(AcceptAnyHostKeyVerifier.INSTANCE);
@@ -85,11 +90,30 @@ public class SSHUtils {
             client.setConnectTimeout(DEFAULT_CONNECT_TIMEOUT);
             client.setTimeout(timeoutInMillis);
         }
-        client.connect(hostname, port);
+        try {
+            client.connect(hostname, port);
+        } catch (IOException e) {
+            throw new CloudManagerException(e);
+        }
 
-        // TODO : switch auth type
+        if (Credentials.BACIC_TYPE.equals(adminAccess.getCredentials().getType())) {
+            try {
+                client.authPassword(adminAccess.getCredentials().getUsername(), adminAccess.getCredentials().getPassword());
+            } catch (Exception e) {
+                throw new CloudManagerException(e);
+            }
+        } else if (Credentials.KEY_TYPE.equals(adminAccess.getCredentials().getType())) {
+            OpenSSHKeyFile key = new OpenSSHKeyFile();
+            key.init(adminAccess.getCredentials().getPrivateKey(), adminAccess.getCredentials().getPrivateKey());
+            try {
+                client.authPublickey(adminAccess.getCredentials().getUsername(), key);
+            } catch (Exception e) {
+                throw new CloudManagerException(e);
+            }
+        } else {
+            throw new CloudManagerException("Can not find a valid SSH credentials in " + adminAccess.getCredentials());
+        }
 
-        client.authPassword(adminAccess.getCredentials().getUsername(), adminAccess.getCredentials().getPassword());
         return client;
     }
 
@@ -242,13 +266,7 @@ public class SSHUtils {
             port = Access.DEFAULT_SSH;
         }
 
-        SSHClient client = null;
-        try {
-            client = SSHUtils.newClient(hostname, port, node.getAccess());
-        } catch (IOException e) {
-            throw new CloudManagerException("Can not create SSH client for node on hostname " + hostname, e);
-        }
-        return client;
+        return SSHUtils.newClient(hostname, port, node.getAccess());
     }
 
 

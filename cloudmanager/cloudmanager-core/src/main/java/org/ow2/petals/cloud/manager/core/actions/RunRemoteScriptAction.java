@@ -34,7 +34,8 @@ import java.io.IOException;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
- * Install software on remote node using defined type of provisioning.
+ * Abstract class to run scripts on remote node.
+ * The implementation must provide the script content which will be copied to the remote node and the command to run.
  *
  * @author Christophe Hamerling - chamerling@linagora.com
  */

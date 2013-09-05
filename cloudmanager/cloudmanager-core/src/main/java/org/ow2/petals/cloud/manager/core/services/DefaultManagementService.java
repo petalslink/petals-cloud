@@ -33,6 +33,7 @@ import org.ow2.petals.cloud.manager.api.deployment.utils.NodeHelper;
 import org.ow2.petals.cloud.manager.api.listeners.DeploymentListener;
 import org.ow2.petals.cloud.manager.core.actions.CreateVMAction;
 import org.ow2.petals.cloud.manager.api.utils.DeploymentListenerList;
+import org.ow2.petals.cloud.manager.core.actions.PuppetConfigureNodeAction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -69,7 +70,9 @@ public class DefaultManagementService implements org.ow2.petals.cloud.manager.ap
 
         // create a set of listeners with the current deployment lifetime
         DeploymentListenerList listeners = new DeploymentListenerList();
-        listeners.addListener(this.listener);
+        if (this.listener != null) {
+            listeners.addListener(this.listener);
+        }
         listeners.addListener(deploymentListener);
 
         // FIXME : will be nice to do it with a workflow instead of this dirty Java code...
@@ -84,38 +87,34 @@ public class DefaultManagementService implements org.ow2.petals.cloud.manager.ap
 
         // deploy nodes based on their priority
         for(org.ow2.petals.cloud.manager.api.deployment.Node node : getOrderedNodes(descriptor.getNodes())) {
-            if (logger.isDebugEnabled()) {
-                logger.debug("Deploying node {}", node);
-            }
+            logger.info("Creating node {}", node);
 
             if (node.getProvider() != null) {
                 ProviderManager provider = getProvider(node.getProvider());
                 if (provider != null) {
 
-                    listeners.on(descriptor.getId(), node, "create", "init", "Creating VM");
-
-                    CreateVMAction create = new CreateVMAction();
                     Context context = new Context(descriptor.getId());
                     context.setProviderManager(provider);
                     context.setNode(node);
-                    context.setListener(deploymentListener);
+                    context.setListener(listeners);
+
+                    CreateVMAction create = new CreateVMAction();
+                    listeners.on(descriptor.getId(), node, "create", "init", "Creating VM");
                     create.execute(context);
 
-                    /*
-                    CopyFilesAction copyFiles = new CopyFilesAction();
-                    try {
-                        copyFiles.execute(context);
-                    } catch (CloudManagerException e) {
-                        logger.warn("Can not copy files to remote node {} : {}", node, e);
-                    }
-                    */
+                    // generate all the configuration files and script
+                    // then copy on the node
+                    PuppetConfigureNodeAction configureNodeAction = new PuppetConfigureNodeAction();
+                    listeners.on(descriptor.getId(), node, "configure", "init", "Creating VM");
+                    configureNodeAction.execute(context);
 
+                    // copy files which have been set in the context
+                    // TODO
+
+                    // once all is done, run startup scripts (if any)
+                    // TODO!!!
                     //RunRemoteScriptAction install = new RunRemoteScriptAction();
                     //install.execute(context);
-
-                    //RunScriptsAction run = new RunScriptsAction();
-                    //run.execute(context);
-
                 } else {
                     //
                     logger.warn("Can not find the provider {} defined in node {}", node.getProvider(), node);

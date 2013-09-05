@@ -24,9 +24,12 @@ package org.ow2.petals.cloud.manager.api.deployment;
  */
 public class Credentials {
 
+    public static String BACIC_TYPE = "basic";
+
+    public static String KEY_TYPE = "key";
+
     /**
      * Credentials type (basic for login/password), key, ...
-     * TODO
      */
     private String type;
 

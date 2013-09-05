@@ -28,6 +28,7 @@ import com.woorea.openstack.nova.model.*;
 import org.ow2.petals.cloud.manager.api.CloudManagerException;
 import org.ow2.petals.cloud.manager.api.ProviderManager;
 import org.ow2.petals.cloud.manager.api.deployment.Node;
+import org.ow2.petals.cloud.manager.api.deployment.Property;
 import org.ow2.petals.cloud.manager.api.deployment.Provider;
 import org.ow2.petals.cloud.manager.api.deployment.utils.NodeHelper;
 import org.ow2.petals.cloud.manager.api.deployment.utils.PropertyHelper;
@@ -103,22 +104,37 @@ public class OpenStackProviderManager implements ProviderManager {
         ServerForCreate create = new ServerForCreate();
         create.setName(node.getName());
 
+        // TODO : Get key from context
         if (getProperty(node, "iaas.key") != null) {
             create.setKeyName((getProperty(node, "iaas.key")).getValue());
+        } else {
+            Property p = getProperty(provider.getProperties(), "iaas.key");
+            if (p != null) {
+                create.setKeyName(p.getValue());
+            }
         }
+
+        if (create.getKeyName() == null) {
+            logger.warn("Attempting to create a node without a security key...");
+        } else {
+            logger.info("Key name " + create.getKeyName());
+        }
+
         create.setFlavorRef(flavor.getId());
         create.setImageRef(image.getId());
         Map<String, String> meta = Maps.newHashMap();
 
-        // add all the properties from the input node, will b used if needed...
+        // add all the properties from the input node, will be used if needed...
         meta.putAll(hasMap(node.getProperties()));
-
-        //meta.put("controller.endpoint", env.controllerEndpoint);
-        //meta.put("container.id", env.localContainerId);
-        //meta.put("virtual.id", env.virtualContainerId);
-        //meta.put("topology.url", env.controllerEndpoint + "/paas/" + env.localContainerId + "/topology/raw");
+        meta.putAll(hasMap(provider.getProperties()));
         create.setMetadata(meta);
-        return Adapter.to(client.servers().boot(create).execute());
+
+        Server server = client.servers().boot(create).execute();
+
+        if (logger.isInfoEnabled()) {
+            logger.info("Openstack create server API call returned : " + server);
+        }
+        return Adapter.to(server);
     }
 
     public List<Node> getNodes(Provider provider) {

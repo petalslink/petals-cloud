@@ -120,4 +120,18 @@ public class Deployment {
     public void setProperties(List<Property> properties) {
         this.properties = properties;
     }
+
+    @Override
+    public String toString() {
+        return "Deployment{" +
+                "id='" + id + '\'' +
+                ", name='" + name + '\'' +
+                ", description='" + description + '\'' +
+                ", providers=" + providers +
+                ", softwares=" + softwares +
+                ", nodes=" + nodes +
+                ", properties=" + properties +
+                ", vm=" + vm +
+                '}';
+    }
 }

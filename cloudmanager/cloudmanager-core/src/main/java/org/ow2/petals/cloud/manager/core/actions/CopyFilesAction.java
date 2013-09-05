@@ -86,7 +86,7 @@ public class CopyFilesAction extends MonitoredAction {
      * @param node
      * @return
      */
-    private List<Property> getFiles(Deployment deployment, Node node) {
+    protected List<Property> getFiles(Deployment deployment, Node node) {
         // get files from node
         Iterable<Property> files = Iterables.filter(node.getProperties(), new Predicate<Property>() {
             public boolean apply(org.ow2.petals.cloud.manager.api.deployment.Property property) {

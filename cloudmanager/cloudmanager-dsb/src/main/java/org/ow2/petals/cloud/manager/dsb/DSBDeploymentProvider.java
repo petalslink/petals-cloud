@@ -17,30 +17,23 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA 
  *
  */
-package org.ow2.petals.cloud.manager.openstack;
+package org.ow2.petals.cloud.manager.dsb;
 
-import com.google.common.base.Function;
-import com.google.common.collect.Lists;
-import com.woorea.openstack.nova.model.Server;
 import org.ow2.petals.cloud.manager.api.deployment.Node;
+import org.ow2.petals.cloud.manager.api.deployment.tools.DeploymentProvider;
 
 /**
  * @author Christophe Hamerling - chamerling@linagora.com
  */
-public class Adapter implements Function<Server, Node> {
+public abstract class DSBDeploymentProvider implements DeploymentProvider {
 
-    public Node apply(com.woorea.openstack.nova.model.Server input) {
-        Node node = new Node();
-        node.setName(input.getName());
-        node.setId(input.getId());
-        node.setProvider("openstack");
-        node.setPrivateIpAddress(Lists.newArrayList(input.getAccessIPv4()));
-
-        // TODO : More
-        return node;
+    public DSBDeploymentProvider() {
     }
 
-    public static final Node to(Server server) {
-        return new Adapter().apply(server);
+    protected void updateConfigurationFiles(Node node) {
     }
+
+    protected void addProperty(Node node, String name, String value) {
+    }
+
 }

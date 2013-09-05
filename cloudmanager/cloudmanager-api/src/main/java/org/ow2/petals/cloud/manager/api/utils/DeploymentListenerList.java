@@ -23,6 +23,7 @@ import com.google.common.collect.Lists;
 import org.ow2.petals.cloud.manager.api.deployment.Node;
 import org.ow2.petals.cloud.manager.api.listeners.DeploymentListener;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -37,7 +38,13 @@ public class DeploymentListenerList implements DeploymentListener {
         this.listeners = Lists.newArrayList();
     }
 
+    /**
+     * @param listeners
+     */
     public DeploymentListenerList(List<DeploymentListener> listeners) {
+        if (listeners == null) {
+            listeners = new ArrayList<DeploymentListener>();
+        }
         this.listeners = listeners;
     }
 
@@ -47,6 +54,11 @@ public class DeploymentListenerList implements DeploymentListener {
         }
     }
 
+    /**
+     * Add a listener to the list
+     *
+     * @param listener
+     */
     public void addListener(DeploymentListener listener) {
         if (listener != null && listeners != null) {
             listeners.add(listener);
