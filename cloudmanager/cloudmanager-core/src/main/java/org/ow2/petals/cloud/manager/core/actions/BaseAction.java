@@ -55,4 +55,19 @@ public abstract class BaseAction implements Action {
         return checkNotNull(context.getDescriptor());
     }
 
+    /**
+     * Notity using the context listener if not null
+     *
+     * @param context
+     * @param node
+     * @param action
+     * @param step
+     * @param pattern
+     * @param args
+     */
+    protected void notity(Context context, Node node, String action, String step, String pattern, Object... args) {
+        if (context.getListener() != null) {
+            context.getListener().on(context.getId(), node, action, step, pattern, args);
+        }
+    }
 }
