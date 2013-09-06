@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<features name="cloudmanager-dsb-features-${project.version}"
+          xmlns="http://karaf.apache.org/xmlns/features/v1.0.0">
+
+    <feature name="cloudmanager-dsb" version="${project.version}">
+        <bundle dependency="true">mvn:org.slf4j/slf4j-api/1.7.5</bundle>
+        <bundle dependency="true">mvn:com.google.guava/guava/${guava.version}</bundle>
+        <bundle dependency="true">mvn:org.ow2.petals.cloud/cloudmanager-api/${project.version}</bundle>
+        <bundle dependency="true">mvn:org.ow2.petals.cloud/controllers-api/${project.version}</bundle>
+
+        <bundle start="true">mvn:org.ow2.petals.cloud/cloudmanager-dsb/${project.version}</bundle>
+    </feature>
+</features>

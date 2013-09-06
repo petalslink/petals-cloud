@@ -19,10 +19,9 @@
  */
 package org.ow2.petals.cloud.manager.dsb;
 
-import org.ow2.petals.cloud.manager.api.deployment.Constants;
-import org.ow2.petals.cloud.manager.api.deployment.Deployment;
-import org.ow2.petals.cloud.manager.api.deployment.Node;
-import org.ow2.petals.cloud.manager.api.deployment.Software;
+import com.google.common.collect.Lists;
+import org.ow2.petals.cloud.manager.api.deployment.*;
+import org.ow2.petals.cloud.manager.api.deployment.utils.PropertyHelper;
 import org.ow2.petals.cloud.manager.api.listeners.DeploymentListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,7 +30,6 @@ import java.util.List;
 import java.util.Map;
 
 import static org.ow2.petals.cloud.manager.api.deployment.utils.NodeHelper.setPriority;
-import static org.ow2.petals.cloud.manager.api.deployment.utils.NodeHelper.setProperty;
 
 /**
  * Generate deployment descriptor for the Master Slave DSB Mode.
@@ -78,7 +76,6 @@ public class MasterSlaveDeploymentProvider extends DSBDeploymentProvider {
         node.getPorts().add(7701);
         // master node have a high deployment priority
         setPriority(node, 1000);
-        setPetalsProperties(node);
         descriptor.getNodes().add(node);
 
         for(int i=0; i< size - 1; i++) {
@@ -89,7 +86,6 @@ public class MasterSlaveDeploymentProvider extends DSBDeploymentProvider {
             slave.getSoftwares().add(jdk.getName());
             slave.getPorts().add(7700);
             slave.getPorts().add(7701);
-            setPetalsProperties(slave);
             descriptor.getNodes().add(slave);
         }
 
@@ -99,17 +95,15 @@ public class MasterSlaveDeploymentProvider extends DSBDeploymentProvider {
 
     }
 
-    /**
-     * Set all the relevant properties which will be used by the DSB runtime.
-     * We use mustache-based expression for values which need to be generated.
-     *
-     * @param node
-     */
-    protected void setPetalsProperties(Node node) {
-        setProperty(node, "petals.controller.endpoint", "url", getControllerEndpoint(node));
-        setProperty(node, "petals.topology.url", "url", getTopologyURL(node));
-        setProperty(node, "petals.container.id", "uuid", "{{petals.container.id}}");
-        setProperty(node, "petals.virtual.id", "uuid", "{{petals.virtual.id}}");
+    public List<Property> getMetadata(Deployment deployment) {
+        return null;
+    }
+
+    public List<Property> getMetadata(Deployment deployment, Node node) {
+        return Lists.newArrayList(PropertyHelper.get("petals.controller.endpoint", "url", getControllerEndpoint(node)),
+                PropertyHelper.get("petals.topology.url", "url", getTopologyURL(node)),
+                PropertyHelper.get("petals.container.id", "uuid", "{{petals.container.id}}"),
+                PropertyHelper.get("petals.virtual.id", "uuid", "{{petals.virtual.id}}"));
     }
 
     /**
