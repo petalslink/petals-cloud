@@ -26,7 +26,12 @@
         <argument ref="mongoTemplate"/>
     </bean>
 
+    <bean id="mongoDeploymentListener" class="org.ow2.petals.cloud.manager.mongo.listener.MongoDeploymentListener">
+        <argument ref="mongoTemplate"/>
+    </bean>
+
     <!-- Expose services -->
     <service ref="providerRegistryService" interface="org.ow2.petals.cloud.manager.api.services.ProviderRegistryService"/>
     <service ref="storageService" interface="org.ow2.petals.cloud.manager.api.services.StorageService"/>
+    <service ref="mongoDeploymentListener" interface="org.ow2.petals.cloud.manager.api.listeners.DeploymentListener"/>
 </blueprint>
