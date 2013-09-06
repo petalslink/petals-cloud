@@ -22,8 +22,10 @@ package org.ow2.petals.cloud.manager.core.actions;
 import org.ow2.petals.cloud.manager.api.CloudManagerException;
 import org.ow2.petals.cloud.manager.api.ProviderManager;
 import org.ow2.petals.cloud.manager.api.actions.Context;
+import org.ow2.petals.cloud.manager.api.deployment.Deployment;
 import org.ow2.petals.cloud.manager.api.deployment.Node;
 import org.ow2.petals.cloud.manager.api.deployment.Provider;
+import org.ow2.petals.cloud.manager.api.deployment.VM;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -42,9 +44,22 @@ public class CreateVMAction extends MonitoredAction {
 
     public void doExecute(Context context) throws CloudManagerException {
         ProviderManager provider = getProviderManager(context);
+        Deployment descriptor = getDescriptor(context);
         Node node = getNode(context);
         Provider account = getProvider(context);
         logger.info("Creating new node on {}", provider.getProviderName());
+
+        if (node.getVm() == null) {
+            node.setVm(descriptor.getVm());
+        }
+        if (node.getVm() == null) {
+            // ...
+            logger.warn("VM information is not set for node {}. Using defaults...", node.getId());
+            VM vm = new VM();
+            vm.setImage("");
+            vm.setOs("");
+            node.setVm(vm);
+        }
 
         Node result = provider.createNode(account, node);
         logger.info("Node {} is created on provider {}", result.getId(), provider.getProviderName());
@@ -52,9 +67,7 @@ public class CreateVMAction extends MonitoredAction {
             logger.debug(result.toString());
         }
 
-        if (context.getListener() != null) {
-            context.getListener().on(context.getId(), node, "create", "done", "Node has been created");
-        }
+        notity(context, node, "create", "done", "Node has been created");
 
         // FIXME : Make a choice
         // TODO: return the node result in the context or merge relevant information in the input one...

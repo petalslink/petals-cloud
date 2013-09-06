@@ -24,10 +24,16 @@ import com.google.common.collect.Maps;
 import org.apache.felix.gogo.commands.Command;
 import org.apache.felix.gogo.commands.Option;
 import org.ow2.petals.cloud.manager.api.CloudManager;
+import org.ow2.petals.cloud.manager.api.PaaS;
 import org.ow2.petals.cloud.manager.api.deployment.Deployment;
+import org.ow2.petals.cloud.manager.api.deployment.Node;
+import org.ow2.petals.cloud.manager.api.deployment.Property;
+import org.ow2.petals.cloud.manager.api.deployment.VM;
 import org.ow2.petals.cloud.manager.api.deployment.tools.DeploymentProvider;
 import org.ow2.petals.cloud.manager.api.deployment.utils.PropertyHelper;
 import org.ow2.petals.cloud.manager.api.utils.DeploymentListenerList;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.List;
 import java.util.Map;
@@ -42,10 +48,12 @@ import static com.google.common.base.Preconditions.checkNotNull;
 @Command(scope = "paas", name = "create", description = "Create a new Petals PaaS")
 public class CreatePaaSCommand extends BaseCommand {
 
+    private static Logger logger = LoggerFactory.getLogger(CreatePaaSCommand.class);
+
     @Option(name = "--size", description = "Number of nodes to create", required = true)
     protected Integer size;
 
-    @Option(name = "--type", description = "Type of PaaS to create", required = true)
+    @Option(name = "--type", description = "Type of PaaS to create (check paas:providers)", required = true)
     protected String type;
 
     @Option(name = "--iaas", description = "Where to deploy the PaaS", required = true)
@@ -72,14 +80,44 @@ public class CreatePaaSCommand extends BaseCommand {
         Deployment descriptor = new Deployment();
         descriptor.getProperties().add(PropertyHelper.get("size", null, "" + size));
         descriptor.getProperties().add(PropertyHelper.get("iaas", null, iaas));
+        // FIXME : env
+        descriptor.getProperties().add(PropertyHelper.get("iaas.key", null, "petals"));
 
         // enrich descriptor using the paas deployment provider
         // TODO : Move to the management service?
         deploymentProvider.populate(descriptor, args);
 
+        // once populated, add metadatas
+        for(Node node : descriptor.getNodes()) {
+            List<Property> nodeMetadata = deploymentProvider.getMetadata(descriptor, node);
+            if (nodeMetadata != null) {
+                for(Property meta : nodeMetadata) {
+                    node.getProperties().add(PropertyHelper.get(meta.getName(), "metadata", meta.getValue()));
+                }
+            }
+        }
+
+        List<Property> deploymentMetadata = deploymentProvider.getMetadata(descriptor);
+        if (deploymentMetadata != null) {
+            for(Property meta : deploymentMetadata) {
+                descriptor.getProperties().add(PropertyHelper.get(meta.getName(), "metadata", meta.getValue()));
+            }
+        }
+
+        // add VM information
+        VM vm = new VM();
+        vm.setImage("");
+        vm.setOs("");
+        descriptor.setVm(vm);
+
         // TODO : Async
-        this.cloudManager.getManagementService().create(descriptor, new DeploymentListenerList(deploymentProvider.getDeploymentListeners()));
-        return "PaaS has been created with size " + size;
+        PaaS paas = this.cloudManager.getManagementService().create(descriptor, new DeploymentListenerList(deploymentProvider.getDeploymentListeners()));
+        this.cloudManager.getStorageService().create(paas);
+        if (logger.isInfoEnabled()) {
+            logger.info("PAAS {}", paas);
+        }
+
+        return paas;
     }
 
     @VisibleForTesting

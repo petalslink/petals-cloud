@@ -38,6 +38,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Comparator;
+import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
@@ -68,6 +69,10 @@ public class DefaultManagementService implements org.ow2.petals.cloud.manager.ap
             descriptor.setId(UUID.randomUUID().toString());
         }
 
+        PaaS paas = new PaaS();
+        paas.setId(descriptor.getId());
+        paas.setCreatedAt(new Date());
+
         // create a set of listeners with the current deployment lifetime
         DeploymentListenerList listeners = new DeploymentListenerList();
         if (this.listener != null) {
@@ -97,6 +102,7 @@ public class DefaultManagementService implements org.ow2.petals.cloud.manager.ap
                     context.setProviderManager(provider);
                     context.setNode(node);
                     context.setListener(listeners);
+                    context.setDescriptor(descriptor);
 
                     CreateVMAction create = new CreateVMAction();
                     listeners.on(descriptor.getId(), node, "create", "init", "Creating VM");
@@ -107,6 +113,8 @@ public class DefaultManagementService implements org.ow2.petals.cloud.manager.ap
                     PuppetConfigureNodeAction configureNodeAction = new PuppetConfigureNodeAction();
                     listeners.on(descriptor.getId(), node, "configure", "init", "Creating VM");
                     configureNodeAction.execute(context);
+
+                    paas.getNodes().add(node);
 
                     // copy files which have been set in the context
                     // TODO
@@ -124,7 +132,7 @@ public class DefaultManagementService implements org.ow2.petals.cloud.manager.ap
                 logger.warn("Can not find provider ID for node {}", node);
             }
         }
-        return null;
+        return paas;
     }
 
     /**
