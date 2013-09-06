@@ -33,4 +33,13 @@
 
     </dependencies>
 
+    <repositories>
+        <repository>
+            <id>petalslink</id>
+            <releases><enabled>true</enabled></releases>
+            <snapshots><enabled>false</enabled></snapshots>
+            <url>http://maven.petalslink.com/public</url>
+        </repository>
+    </repositories>
+
 </project>
