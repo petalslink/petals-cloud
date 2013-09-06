@@ -40,15 +40,12 @@ import static com.google.common.base.Preconditions.checkNotNull;
  *
  * @author Christophe Hamerling - chamerling@linagora.com
  */
-@Command(scope = "vm", name = "create", description = "Create a new VM on a provider")
+@Command(scope = "vm", name = "create", description = "Create a new VM on a IaaS provider")
 public class CreateVMCommand extends OsgiCommandSupport {
 
     private final List<ProviderManager> providerManagers;
 
     private final ProviderRegistryService providerRegistryService;
-
-    @Option(name = "--iaas", description = "Where to create the VM (get the list of available IaaS using iaas/providers)", required = true)
-    protected String iaas;
 
     @Option(name = "--account", description = "Account information (get the list of available accounts using iaas/accounts)", required = true)
     protected String account;
@@ -63,8 +60,8 @@ public class CreateVMCommand extends OsgiCommandSupport {
 
     @Override
     protected Object doExecute() throws Exception {
-        ProviderManager manager = checkNotNull(getManager(iaas), "Can not retrieve provider for IaaS %s", iaas);
         Provider provider = checkNotNull(getProvider(account), "Can not find the account information with name %s. Check iaas/accounts", account);
+        ProviderManager manager = checkNotNull(getManager(provider.getType()), "Can not retrieve provider for IaaS %s", provider.getType());
 
         Node node = new Node();
         if (name != null) {
