@@ -43,13 +43,14 @@ public class MasterSlaveDeploymentProvider extends DSBDeploymentProvider {
 
     protected static final int DEFAULT_SIZE = 3;
 
+    /**
+     * A provider can give a list of listeners in order to handle specific events.
+     * For example, the DSB provider may be able to notify the Petals controller about status and so update Petals topology.
+     */
     private List<DeploymentListener> listeners;
 
-    /**
-     *
-     */
-    public MasterSlaveDeploymentProvider(List<DeploymentListener> listeners) {
-        this.listeners = listeners;
+    public MasterSlaveDeploymentProvider(DeploymentListener listener) {
+        this.listeners = Lists.newArrayList(listener);
     }
 
     // TODO : Populate from config files...

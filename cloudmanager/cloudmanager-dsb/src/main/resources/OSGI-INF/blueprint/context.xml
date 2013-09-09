@@ -8,15 +8,11 @@
     <!-- Allow usage of System properties, especially the karaf.base property -->
     <ext:property-placeholder placeholder-prefix="$[" placeholder-suffix="]"/>
 
-    <!-- Need all the deployment listeners -->
-    <reference-list id="deploymentListeners"
-                    interface="org.ow2.petals.cloud.manager.api.listeners.DeploymentListener"
-                    availability="optional"
-                    activation="eager"/>
+    <bean id="petals-controller-listener" class="org.ow2.petals.cloud.manager.dsb.ControllerActionListener"/>
 
     <bean id="cloudmanager-dsb"
           class="org.ow2.petals.cloud.manager.dsb.MasterSlaveDeploymentProvider">
-        <argument ref="deploymentListeners"/>
+        <argument ref="petals-controller-listener"/>
     </bean>
 
     <!-- Expose -->

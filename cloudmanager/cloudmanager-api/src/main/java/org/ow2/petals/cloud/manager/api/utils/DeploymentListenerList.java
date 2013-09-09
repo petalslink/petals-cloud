@@ -64,4 +64,10 @@ public class DeploymentListenerList implements DeploymentListener {
             listeners.add(listener);
         }
     }
+
+    public void add(List<DeploymentListener> listeners) {
+        if (listeners != null) {
+            this.listeners.addAll(listeners);
+        }
+    }
 }

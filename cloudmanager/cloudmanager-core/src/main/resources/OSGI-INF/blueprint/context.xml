@@ -3,12 +3,13 @@
 
     <!-- External references (imports) -->
     <reference id="storageService" interface="org.ow2.petals.cloud.manager.api.services.StorageService"/>
-    <reference id="deploymentListener" interface="org.ow2.petals.cloud.manager.api.listeners.DeploymentListener" availability="optional"/>
+
+    <reference-list id="deploymentListeners" interface="org.ow2.petals.cloud.manager.api.listeners.DeploymentListener" availability="optional"/>
     <reference-list id="providerManagers" interface="org.ow2.petals.cloud.manager.api.ProviderManager" activation="eager" availability="optional"/>
 
     <bean id="managementService" class="org.ow2.petals.cloud.manager.core.services.DefaultManagementService">
         <argument ref="providerManagers"/>
-        <argument ref="deploymentListener"/>
+        <argument ref="deploymentListeners"/>
     </bean>
 
     <service ref="managementService" interface="org.ow2.petals.cloud.manager.api.services.ManagementService"/>

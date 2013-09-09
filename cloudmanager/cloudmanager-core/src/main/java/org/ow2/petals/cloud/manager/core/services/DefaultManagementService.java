@@ -56,11 +56,11 @@ public class DefaultManagementService implements org.ow2.petals.cloud.manager.ap
 
     private List<ProviderManager> providers;
 
-    private DeploymentListener listener;
+    private List<DeploymentListener> listeners;
 
-    public DefaultManagementService(List<ProviderManager> providers, DeploymentListener listener) {
+    public DefaultManagementService(List<ProviderManager> providers, List<DeploymentListener> listener) {
         this.providers = providers;
-        this.listener = listener;
+        this.listeners = listeners;
     }
 
     public PaaS create(Deployment descriptor, DeploymentListener deploymentListener) throws CloudManagerException {
@@ -73,10 +73,11 @@ public class DefaultManagementService implements org.ow2.petals.cloud.manager.ap
         paas.setId(descriptor.getId());
         paas.setCreatedAt(new Date());
 
-        // create a set of listeners with the current deployment lifetime
+        // create a set of listeners within the current deployment lifetime
+        // This uses the default platform level listeners + the input one
         DeploymentListenerList listeners = new DeploymentListenerList();
-        if (this.listener != null) {
-            listeners.addListener(this.listener);
+        if (this.listeners != null) {
+            listeners.add(this.listeners);
         }
         listeners.addListener(deploymentListener);
 
