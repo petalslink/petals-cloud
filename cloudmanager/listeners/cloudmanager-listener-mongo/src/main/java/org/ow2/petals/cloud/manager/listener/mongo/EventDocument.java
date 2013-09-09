@@ -17,7 +17,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA 
  *
  */
-package org.ow2.petals.cloud.manager.mongo.document;
+package org.ow2.petals.cloud.manager.listener.mongo;
 
 import org.bson.types.ObjectId;
 import org.ow2.petals.cloud.manager.api.deployment.Node;

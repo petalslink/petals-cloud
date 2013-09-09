@@ -46,6 +46,7 @@
 
         <module>cloudmanager/providers/cloudmanager-openstack</module>
         <module>cloudmanager/providers/cloudmanager-ec2</module>
+        <module>cloudmanager/listeners/cloudmanager-listener-mongo</module>
     </modules>
 
     <dependencyManagement>

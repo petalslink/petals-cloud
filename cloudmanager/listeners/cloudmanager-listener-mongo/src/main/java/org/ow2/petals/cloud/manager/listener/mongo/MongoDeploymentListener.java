@@ -17,11 +17,10 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA 
  *
  */
-package org.ow2.petals.cloud.manager.mongo.listener;
+package org.ow2.petals.cloud.manager.listener.mongo;
 
 import org.ow2.petals.cloud.manager.api.deployment.Node;
 import org.ow2.petals.cloud.manager.api.listeners.DeploymentListener;
-import org.ow2.petals.cloud.manager.mongo.document.EventDocument;
 import org.springframework.data.mongodb.core.MongoTemplate;
 
 import static org.springframework.data.mongodb.core.query.Criteria.where;
