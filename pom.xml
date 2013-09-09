@@ -24,7 +24,7 @@
     <modules>
         <module>controllers/controllers-api</module>
         <module>controllers/controllers-core</module>
-        <module>controllers/karaf/controllers-features</module>
+        <!--<module>controllers/karaf/controllers-features</module>-->
         <module>controllers/karaf/controllers-commands</module>
         <module>controllers/controllers-dsb</module>
 
