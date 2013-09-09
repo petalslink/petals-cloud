@@ -12,6 +12,7 @@
 
     <artifactId>generator-soap</artifactId>
     <description>A SOAP artifact generator</description>
+    <packaging>bundle</packaging>
 
     <properties>
         <osgi.export>org.ow2.petals.cloud.tools.generator.soap*</osgi.export>
