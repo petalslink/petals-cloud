@@ -1,0 +1,11 @@
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
+           xmlns:ext="http://aries.apache.org/blueprint/xmlns/blueprint-ext/v1.0.0"
+           xmlns:cfg="http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.1.0">
+
+    <bean id="httpDeploymentListener" class="org.ow2.petals.cloud.manager.listener.http.HttpDeploymentListener">
+        <property name="endpoint" value="http://localhost:3000/events"/>
+    </bean>
+
+    <!-- Expose services -->
+    <service ref="httpDeploymentListener" interface="org.ow2.petals.cloud.manager.api.listeners.DeploymentListener"/>
+</blueprint>
