@@ -35,7 +35,7 @@ public class PaaS {
     /**
      * Unique PaaS ID in the platform
      */
-    private String id;
+    private String uuid;
 
     private String type;
 
@@ -56,12 +56,12 @@ public class PaaS {
         this.nodes = new ArrayList<Node>();
     }
 
-    public String getId() {
-        return id;
+    public String getUuid() {
+        return uuid;
     }
 
-    public void setId(String id) {
-        this.id = id;
+    public void setUuid(String uuid) {
+        this.uuid = uuid;
     }
 
     public String getType() {
@@ -115,7 +115,7 @@ public class PaaS {
     @Override
     public String toString() {
         return "PaaS{" +
-                "id='" + id + '\'' +
+                "uuid='" + uuid + '\'' +
                 ", type='" + type + '\'' +
                 ", name='" + name + '\'' +
                 ", status='" + status + '\'' +

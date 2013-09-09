@@ -64,10 +64,12 @@ public class MasterSlaveDeploymentProvider extends DSBDeploymentProvider {
         dsb.setName("petals-dsb");
         dsb.setType(Constants.URL_TYPE);
         dsb.setSource("http://central.maven.org/maven2/org/ow2/petals/dsb/distribution/dsb-distribution/1.0.0/dsb-distribution-1.0.0.zip");
+        descriptor.getSoftwares().add(dsb);
 
         Software jdk = new Software();
         jdk.setType(Constants.PACKAGE_TYPE);
         jdk.setName("openjdk-6-jdk");
+        descriptor.getSoftwares().add(jdk);
 
         Node node = new Node();
         node.setName("master");

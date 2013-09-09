@@ -46,7 +46,7 @@ public abstract class BaseCommand extends OsgiCommandSupport {
     }
 
     /**
-     * Get a runtime support from its type
+     * Get the deployment provider from its type
      *
      * @param type
      * @return

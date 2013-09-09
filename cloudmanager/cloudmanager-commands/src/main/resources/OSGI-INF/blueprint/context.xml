@@ -23,6 +23,7 @@
             <shell:action class="org.ow2.petals.cloud.manager.commands.paas.CreatePaaSCommand">
                 <shell:argument ref="cloudManager"/>
                 <shell:argument ref="supportedRuntimes"/>
+                <shell:argument ref="providerRegistryService"/>
             </shell:action>
         </shell:command>
         <shell:command name="paas/list">

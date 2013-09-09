@@ -68,9 +68,19 @@ public class PuppetConfigureNodeAction extends MonitoredAction {
 
         notity(context, node, CONFIGURE_ACTION, "files.generate", null);
         List<Property> files = getFiles(context);
+        if (files != null && logger.isDebugEnabled()) {
+            for(Property file : files) {
+                logger.debug("Generated file {}", file);
+            }
+        }
 
         notity(context, node, CONFIGURE_ACTION, "scripts.generate", null);
         List<Property> scripts = getScripts(context);
+        if (scripts != null && logger.isDebugEnabled()) {
+            for(Property script : scripts) {
+                logger.debug("Generated script {}", script);
+            }
+        }
 
         notity(context, node, CONFIGURE_ACTION, "files.copy", null);
         copyFiles(context, node, files);

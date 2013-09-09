@@ -29,6 +29,7 @@ import org.ow2.petals.cloud.manager.api.ProviderManager;
 import org.ow2.petals.cloud.manager.api.actions.Context;
 import org.ow2.petals.cloud.manager.api.deployment.Deployment;
 import org.ow2.petals.cloud.manager.api.deployment.Node;
+import org.ow2.petals.cloud.manager.api.deployment.Provider;
 import org.ow2.petals.cloud.manager.api.deployment.utils.NodeHelper;
 import org.ow2.petals.cloud.manager.api.listeners.DeploymentListener;
 import org.ow2.petals.cloud.manager.core.actions.CreateVMAction;
@@ -58,7 +59,7 @@ public class DefaultManagementService implements org.ow2.petals.cloud.manager.ap
 
     private List<DeploymentListener> listeners;
 
-    public DefaultManagementService(List<ProviderManager> providers, List<DeploymentListener> listener) {
+    public DefaultManagementService(List<ProviderManager> providers, List<DeploymentListener> listeners) {
         this.providers = providers;
         this.listeners = listeners;
     }
@@ -70,7 +71,7 @@ public class DefaultManagementService implements org.ow2.petals.cloud.manager.ap
         }
 
         PaaS paas = new PaaS();
-        paas.setId(descriptor.getId());
+        paas.setUuid(descriptor.getId());
         paas.setCreatedAt(new Date());
 
         // create a set of listeners within the current deployment lifetime
@@ -96,14 +97,22 @@ public class DefaultManagementService implements org.ow2.petals.cloud.manager.ap
             logger.info("Creating node {}", node);
 
             if (node.getProvider() != null) {
-                ProviderManager provider = getProvider(node.getProvider());
-                if (provider != null) {
+                Provider account = getProvider(descriptor, node);
+                ProviderManager providerManager = getProviderManager(account);
+
+                if (logger.isDebugEnabled()) {
+                    logger.debug("Provider account : {}", account);
+                    logger.debug("Provider Manager : {} {}", providerManager.getProviderName(), providerManager.getProviderVersion());
+                }
+
+                if (providerManager != null) {
 
                     Context context = new Context(descriptor.getId());
-                    context.setProviderManager(provider);
+                    context.setProviderManager(providerManager);
                     context.setNode(node);
                     context.setListener(listeners);
                     context.setDescriptor(descriptor);
+                    context.setProvider(account);
 
                     CreateVMAction create = new CreateVMAction();
                     listeners.on(descriptor.getId(), node, "create", "init", "Creating VM");
@@ -142,10 +151,28 @@ public class DefaultManagementService implements org.ow2.petals.cloud.manager.ap
      * @param provider
      * @return
      */
-    protected ProviderManager getProvider(final String provider) {
+    protected ProviderManager getProviderManager(final Provider provider) {
+        if (provider == null) {
+                return null;
+        }
+
         return Iterables.tryFind(providers, new Predicate<ProviderManager>() {
             public boolean apply(ProviderManager input) {
-                return provider.equalsIgnoreCase(input.getProviderName());
+                return provider.getType().equals(input.getProviderName());
+            }
+        }).orNull();
+    }
+
+    /**
+     * Get the account to be used with the node and defined provider manager
+     *
+     * @param node
+     * @return
+     */
+    protected Provider getProvider(final Deployment descriptor, final Node node) {
+        return Iterables.tryFind(descriptor.getProviders(), new Predicate<Provider>() {
+            public boolean apply(org.ow2.petals.cloud.manager.api.deployment.Provider input) {
+                return input.getName().equals(node.getProvider());
             }
         }).orNull();
     }

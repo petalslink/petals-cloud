@@ -13,6 +13,12 @@
     <repository>
         mvn:org.ow2.petals.cloud/cloudmanager-mongo/${project.version}/xml/features
     </repository>
+    <repository>
+        mvn:org.ow2.petals.cloud/cloudmanager-listener-http/${project.version}/xml/features
+    </repository>
+    <repository>
+        mvn:org.ow2.petals.cloud/cloudmanager-dsb/${project.version}/xml/features
+    </repository>
 
     <feature name="cloudmanager-commands" version="${project.version}">
         <bundle start="true">mvn:org.ow2.petals.cloud/cloudmanager-commands/${project.version}</bundle>
@@ -26,6 +32,8 @@
     <feature name="cloudmanager-all" version="${project.version}">
         <feature version="${project.version}">cloudmanager-core</feature>
         <feature version="${project.version}">cloudmanager-mongo</feature>
+        <feature version="${project.version}">cloudmanager-listener-http</feature>
+        <feature version="${project.version}">cloudmanager-dsb</feature>
         <feature version="${project.version}">cloudmanager-commands</feature>
         <feature version="${project.version}">cloudmanager-listener-commands</feature>
         <feature version="${project.version}">cloudmanager-openstack</feature>

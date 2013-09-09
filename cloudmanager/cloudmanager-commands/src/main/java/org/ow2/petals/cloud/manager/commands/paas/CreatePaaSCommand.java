@@ -20,17 +20,19 @@
 package org.ow2.petals.cloud.manager.commands.paas;
 
 import com.google.common.annotations.VisibleForTesting;
+import com.google.common.base.Predicate;
+import com.google.common.collect.Iterables;
 import com.google.common.collect.Maps;
 import org.apache.felix.gogo.commands.Command;
 import org.apache.felix.gogo.commands.Option;
 import org.ow2.petals.cloud.manager.api.CloudManager;
+import org.ow2.petals.cloud.manager.api.CloudManagerException;
 import org.ow2.petals.cloud.manager.api.PaaS;
-import org.ow2.petals.cloud.manager.api.deployment.Deployment;
-import org.ow2.petals.cloud.manager.api.deployment.Node;
-import org.ow2.petals.cloud.manager.api.deployment.Property;
-import org.ow2.petals.cloud.manager.api.deployment.VM;
+import org.ow2.petals.cloud.manager.api.ProviderManager;
+import org.ow2.petals.cloud.manager.api.deployment.*;
 import org.ow2.petals.cloud.manager.api.deployment.tools.DeploymentProvider;
 import org.ow2.petals.cloud.manager.api.deployment.utils.PropertyHelper;
+import org.ow2.petals.cloud.manager.api.services.ProviderRegistryService;
 import org.ow2.petals.cloud.manager.api.utils.DeploymentListenerList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -50,17 +52,23 @@ public class CreatePaaSCommand extends BaseCommand {
 
     private static Logger logger = LoggerFactory.getLogger(CreatePaaSCommand.class);
 
+    private final ProviderRegistryService providerRegistry;
+
     @Option(name = "--size", description = "Number of nodes to create", required = true)
     protected Integer size;
 
     @Option(name = "--type", description = "Type of PaaS to create (check paas:providers)", required = true)
     protected String type;
 
-    @Option(name = "--iaas", description = "Where to deploy the PaaS", required = true)
+    /**
+     * The iaas is the account name of the IaaS to target. The provider must be retrieved from this name and injected into the nodes.
+     */
+    @Option(name = "--iaas", description = "The account used to deploy the PaaS", required = true)
     protected String iaas;
 
-    public CreatePaaSCommand(CloudManager cloudManager, List<DeploymentProvider> supportedRuntimes) {
+    public CreatePaaSCommand(CloudManager cloudManager, List<DeploymentProvider> supportedRuntimes, ProviderRegistryService providerRegistryService) {
         super(cloudManager, supportedRuntimes);
+        this.providerRegistry = providerRegistryService;
     }
 
     @Override
@@ -69,6 +77,11 @@ public class CreatePaaSCommand extends BaseCommand {
         DeploymentProvider deploymentProvider = getDeploymentProvider(type);
         if (deploymentProvider == null) {
             throw new Exception("Can not find deployment provider for type : " + type);
+        }
+
+        Provider provider = getProvider(iaas);
+        if (provider == null) {
+            throw new Exception("Can not find IaaS provider from IaaS account " + iaas);
         }
 
         // TODO : The provider must provide a set of requirements which must be filled.
@@ -82,10 +95,17 @@ public class CreatePaaSCommand extends BaseCommand {
         descriptor.getProperties().add(PropertyHelper.get("iaas", null, iaas));
         // FIXME : env
         descriptor.getProperties().add(PropertyHelper.get("iaas.key", null, "petals"));
+        descriptor.getProviders().add(provider);
 
         // enrich descriptor using the paas deployment provider
         // TODO : Move to the management service?
         deploymentProvider.populate(descriptor, args);
+
+        for(Node node : descriptor.getNodes()) {
+            // add iaas
+            // TODO : Can be based on rules to dispatch deployment on several nodes.
+            node.setProvider(provider.getName());
+        }
 
         // once populated, add metadatas
         for(Node node : descriptor.getNodes()) {
@@ -118,6 +138,21 @@ public class CreatePaaSCommand extends BaseCommand {
         }
 
         return paas;
+    }
+
+    /**
+     * Get the provider from its name
+     *
+     * @param providerName
+     * @return
+     * @throws CloudManagerException
+     */
+    protected Provider getProvider(final String providerName) throws CloudManagerException {
+        return Iterables.tryFind(providerRegistry.get(), new Predicate<Provider>() {
+            public boolean apply(org.ow2.petals.cloud.manager.api.deployment.Provider input) {
+                return input.getName() != null && input.getName().equals(providerName);
+            }
+        }).orNull();
     }
 
     @VisibleForTesting
