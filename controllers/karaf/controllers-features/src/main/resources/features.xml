@@ -63,9 +63,4 @@
     <feature name="petals-commands" version="${project.version}">
         <bundle start="true">mvn:org.ow2.petals.cloud/controller-commands/${project.version}</bundle>
     </feature>
-
-    <feature name="cloudmanager-commands" version="${project.version}">
-        <bundle start="true">mvn:org.ow2.petals.cloud/controller-commands/${project.version}</bundle>
-    </feature>
-
 </features>
