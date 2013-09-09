@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="windows-1252"?>
+
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
+           xmlns:shell="http://karaf.apache.org/xmlns/shell/v1.0.0"
+           xmlns:cm="http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.1.0"
+           xmlns:ext="http://aries.apache.org/blueprint/xmlns/blueprint-ext/v1.0.0">
+
+    <!-- Allow usage of System properties, especially the karaf.base property -->
+    <ext:property-placeholder placeholder-prefix="$[" placeholder-suffix="]"/>
+
+    <reference-list id="listeners" interface="org.ow2.petals.cloud.manager.api.listeners.DeploymentListener"
+                    availability="optional" activation="eager"/>
+
+    <shell:command-bundle>
+        <!-- PaaS Commands -->
+        <shell:command name="listener/list">
+            <shell:action class="org.ow2.petals.cloud.manager.listener.commands.ListListenersCommand">
+                <shell:argument ref="listeners"/>
+            </shell:action>
+        </shell:command>
+        <shell:command name="listener/test">
+            <shell:action class="org.ow2.petals.cloud.manager.listener.commands.TestListenersCommand">
+                <shell:argument ref="listeners"/>
+            </shell:action>
+        </shell:command>
+    </shell:command-bundle>
+</blueprint>

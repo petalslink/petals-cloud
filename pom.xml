@@ -48,6 +48,7 @@
         <module>cloudmanager/providers/cloudmanager-ec2</module>
         <module>cloudmanager/listeners/cloudmanager-listener-mongo</module>
         <module>cloudmanager/listeners/cloudmanager-listener-http</module>
+        <module>cloudmanager/listeners/cloudmanager-listener-commands</module>
     </modules>
 
     <dependencyManagement>

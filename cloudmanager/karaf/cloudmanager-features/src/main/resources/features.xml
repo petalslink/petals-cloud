@@ -18,11 +18,16 @@
         <bundle start="true">mvn:org.ow2.petals.cloud/cloudmanager-commands/${project.version}</bundle>
     </feature>
 
+    <feature name="cloudmanager-listener-commands" version="${project.version}">
+        <bundle start="true">mvn:org.ow2.petals.cloud/cloudmanager-listener-commands/${project.version}</bundle>
+    </feature>
+
     <!-- Default features wich will be started -->
     <feature name="cloudmanager-all" version="${project.version}">
         <feature version="${project.version}">cloudmanager-core</feature>
         <feature version="${project.version}">cloudmanager-mongo</feature>
         <feature version="${project.version}">cloudmanager-commands</feature>
+        <feature version="${project.version}">cloudmanager-listener-commands</feature>
         <feature version="${project.version}">cloudmanager-openstack</feature>
     </feature>
 </features>
